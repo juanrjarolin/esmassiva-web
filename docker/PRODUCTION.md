@@ -14,19 +14,43 @@ Esta guía te ayudará a desplegar Esmassiva en producción usando Docker Compos
 
 ### 1. Preparar el Servidor
 
+#### Opción A: Usar el script de instalación (Recomendado)
+
+```bash
+# Navegar a la carpeta docker del proyecto
+cd docker
+
+# Hacer el script ejecutable
+chmod +x install-docker.sh
+
+# Ejecutar el script de instalación
+sudo bash install-docker.sh
+```
+
+El script detectará automáticamente:
+- Si Docker ya está instalado
+- La versión disponible de Docker Compose (V1 o V2)
+- Agregará tu usuario al grupo docker
+
+#### Opción B: Instalación manual
+
 ```bash
 # Actualizar el sistema
 sudo apt update && sudo apt upgrade -y
 
-# Instalar Docker (si no está instalado)
+# Instalar Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 
-# Instalar Docker Compose
-sudo apt install docker-compose-plugin -y
+# Instalar Docker Compose (intenta V2 primero, luego V1)
+sudo apt install docker-compose-plugin -y || \
+  (curl -L "https://github.com/docker/compose/releases/download/v1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && \
+   sudo chmod +x /usr/local/bin/docker-compose)
 
-# Agregar usuario al grupo docker (opcional)
+# Agregar usuario al grupo docker
 sudo usermod -aG docker $USER
+
+# Cerrar sesión y volver a iniciar para aplicar cambios
 ```
 
 ### 2. Clonar/Subir el Proyecto
@@ -153,11 +177,23 @@ sudo certbot renew --dry-run
 ```bash
 cd docker
 
+# Usar el script de despliegue (recomendado)
+chmod +x deploy-production.sh
+sudo bash deploy-production.sh
+
+# O manualmente:
+# Detectar qué comando usar
+if docker compose version >/dev/null 2>&1; then
+    DOCKER_COMPOSE_CMD="docker compose"
+else
+    DOCKER_COMPOSE_CMD="docker-compose"
+fi
+
 # Construir y levantar en producción
-docker compose up -d --build
+$DOCKER_COMPOSE_CMD up -d --build
 
 # Ver logs
-docker compose logs -f app
+$DOCKER_COMPOSE_CMD logs -f app
 ```
 
 ### 7. Verificar el Despliegue

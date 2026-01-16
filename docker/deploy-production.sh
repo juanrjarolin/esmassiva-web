@@ -57,17 +57,30 @@ source .env
 
 echo -e "${GREEN}✓ Archivo .env encontrado${NC}"
 
+# Detectar qué comando de Docker Compose usar
+if docker compose version >/dev/null 2>&1; then
+    DOCKER_COMPOSE_CMD="docker compose"
+elif command -v docker-compose >/dev/null 2>&1; then
+    DOCKER_COMPOSE_CMD="docker-compose"
+else
+    echo -e "${RED}Error: Docker Compose no está instalado${NC}"
+    echo "Ejecuta: sudo bash install-docker.sh"
+    exit 1
+fi
+
+echo -e "${BLUE}Usando: ${DOCKER_COMPOSE_CMD}${NC}\n"
+
 # Detener servicios existentes
 echo -e "\n${YELLOW}Deteniendo servicios existentes...${NC}"
-docker compose down
+$DOCKER_COMPOSE_CMD down
 
 # Construir imágenes
 echo -e "\n${YELLOW}Construyendo imágenes...${NC}"
-docker compose build --no-cache app
+$DOCKER_COMPOSE_CMD build --no-cache app
 
 # Levantar servicios
 echo -e "\n${YELLOW}Levantando servicios...${NC}"
-docker compose up -d
+$DOCKER_COMPOSE_CMD up -d
 
 # Esperar a que los servicios estén listos
 echo -e "\n${YELLOW}Esperando a que los servicios estén listos...${NC}"
@@ -75,18 +88,18 @@ sleep 10
 
 # Verificar estado
 echo -e "\n${YELLOW}Verificando estado de los servicios...${NC}"
-docker compose ps
+$DOCKER_COMPOSE_CMD ps
 
 # Verificar health checks
 echo -e "\n${YELLOW}Verificando health checks...${NC}"
 for i in {1..30}; do
-    if docker compose exec -T app curl -f http://localhost:3000 > /dev/null 2>&1; then
+    if $DOCKER_COMPOSE_CMD exec -T app curl -f http://localhost:3000 > /dev/null 2>&1; then
         echo -e "${GREEN}✓ Aplicación está respondiendo${NC}"
         break
     fi
     if [ $i -eq 30 ]; then
         echo -e "${RED}✗ La aplicación no está respondiendo después de 30 intentos${NC}"
-        echo "Revisa los logs: docker compose logs app"
+        echo "Revisa los logs: $DOCKER_COMPOSE_CMD logs app"
         exit 1
     fi
     sleep 2
@@ -106,10 +119,10 @@ if [ "${LISTEN_IP:-127.0.0.1}" = "0.0.0.0" ]; then
 fi
 
 echo -e "\n${BLUE}Comandos útiles:${NC}"
-echo "  Ver logs: docker compose logs -f app"
-echo "  Estado: docker compose ps"
-echo "  Reiniciar: docker compose restart app"
-echo "  Detener: docker compose down"
+echo "  Ver logs: $DOCKER_COMPOSE_CMD logs -f app"
+echo "  Estado: $DOCKER_COMPOSE_CMD ps"
+echo "  Reiniciar: $DOCKER_COMPOSE_CMD restart app"
+echo "  Detener: $DOCKER_COMPOSE_CMD down"
 
 echo -e "\n${YELLOW}⚠️  Recordatorios de Seguridad:${NC}"
 echo "  - Cambia todas las contraseñas por defecto"

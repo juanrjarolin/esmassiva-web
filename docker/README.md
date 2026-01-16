@@ -2,6 +2,8 @@
 
 ## Inicio Rápido
 
+### En Desarrollo Local
+
 ```bash
 # 1. Crear archivo .env en la carpeta docker/
 cd docker
@@ -9,10 +11,29 @@ cp env.example.txt .env  # o crea el archivo manualmente
 
 # 2. Levantar todo
 docker compose up -d
+# O usar el script: ../scripts/docker-compose up -d
 
 # 3. Ver los logs
 docker compose logs -f app
 ```
+
+### En Producción
+
+```bash
+# 1. Instalar Docker y Docker Compose
+cd docker
+chmod +x install-docker.sh
+sudo bash install-docker.sh
+
+# 2. Configurar variables de entorno
+cp env.example.txt .env
+nano .env  # Edita con valores de producción
+
+# 3. Desplegar
+sudo bash deploy-production.sh
+```
+
+Ver [INSTALL.md](INSTALL.md) para más detalles sobre la instalación de Docker.
 
 ## Variables de Entorno
 

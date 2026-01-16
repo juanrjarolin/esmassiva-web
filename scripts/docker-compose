@@ -51,5 +51,17 @@ if [ -z "$NODE_ENV" ]; then
   NODE_ENV=development
 fi
 
+# detect which docker compose command is available
+if docker compose version >/dev/null 2>&1; then
+    # Docker Compose V2 (plugin)
+    DOCKER_COMPOSE_CMD="docker compose"
+elif command -v docker-compose >/dev/null 2>&1; then
+    # Docker Compose V1 (standalone)
+    DOCKER_COMPOSE_CMD="docker-compose"
+else
+    echo "Error: Neither 'docker compose' nor 'docker-compose' is available"
+    exit 1
+fi
+
 # run docker compose with the args
-docker compose -p "$APP_NAME" --env-file ../.env "$@"
+$DOCKER_COMPOSE_CMD -p "$APP_NAME" --env-file ../.env "$@"
