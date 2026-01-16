@@ -7,6 +7,9 @@ import { env } from "./src/server/env";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import { consoleForwardPlugin } from "./vite-console-forward-plugin";
 
+// Obtener base path de la variable de entorno
+const basePath = env.BASE_PATH || "";
+
 export default createApp({
   server: {
     preset: "node-server", // change to 'netlify' or 'bun' or anyof the supported presets for nitro (nitro.unjs.io)
@@ -19,11 +22,12 @@ export default createApp({
       type: "static",
       name: "public",
       dir: "./public",
+      base: basePath,
     },
     {
       type: "http",
       name: "trpc",
-      base: "/trpc",
+      base: `${basePath}/trpc`,
       handler: "./src/server/trpc/handler.ts",
       target: "server",
       plugins: () => [
@@ -43,7 +47,7 @@ export default createApp({
     {
       type: "http",
       name: "debug",
-      base: "/api/debug/client-logs",
+      base: `${basePath}/api/debug/client-logs`,
       handler: "./src/server/debug/client-logs-handler.ts",
       target: "server",
       plugins: () => [
@@ -64,6 +68,7 @@ export default createApp({
       type: "spa",
       name: "client",
       handler: "./index.html",
+      base: basePath,
       target: "browser",
       plugins: () => [
         config("allowedHosts", {
@@ -73,6 +78,10 @@ export default createApp({
               ? [env.BASE_URL.split("://")[1]]
               : undefined,
           },
+        }),
+        config("vite", {
+          // @ts-ignore
+          base: basePath || "/",
         }),
         tsConfigPaths({
           projects: ["./tsconfig.json"],
@@ -87,7 +96,7 @@ export default createApp({
         nodePolyfills(),
         consoleForwardPlugin({
           enabled: true,
-          endpoint: "/api/debug/client-logs",
+          endpoint: `${basePath}/api/debug/client-logs`,
           levels: ["log", "warn", "error", "info", "debug"],
         }),
       ],

@@ -90,13 +90,25 @@ services:
         else
           echo "Building for production..."
           pnpm build
+
           echo "Verifying build output..."
           if [ -d ".output" ]; then
             echo "✓ Build output directory found"
+            echo "Checking structure:"
             ls -la .output/ | head -10
+            echo ""
+            echo "Looking for processed HTML:"
+            find .output -name "*.html" -type f 2>/dev/null | head -5 || echo "No HTML files found"
+            echo ""
+            echo "Checking for client build:"
+            find .output -type d -name "*client*" 2>/dev/null | head -5 || echo "No client directory found"
           else
-            echo "⚠ Warning: .output directory not found"
+            echo "❌ ERROR: .output directory not found after build"
+            echo "Build may have failed. Check logs above for errors."
+            exit 1
           fi
+
+          echo ""
           echo "Running in production mode"
           PORT=3000 pnpm start
         fi
@@ -114,6 +126,7 @@ services:
       - MINIO_ENDPOINT=minio
       - MINIO_PORT=9000
       - BASE_URL=${BASE_URL:-}
+      - BASE_PATH=${BASE_PATH:-/esmassiva-web}
       - PORT=3000
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
