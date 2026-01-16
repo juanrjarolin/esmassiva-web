@@ -1,0 +1,340 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// CONTENIDO ADMINISTRABLE
+// ============================================================================
+
+// Configuración general del sitio
+model SiteSettings {
+  id          Int      @id @default(autoincrement())
+  updatedAt   DateTime @updatedAt
+
+  key         String   @unique
+  value       String   @db.Text
+
+  @@map("site_settings")
+}
+
+// Servicios
+model Service {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  title       String
+  slug        String   @unique
+  description String   @db.Text
+  icon        String   // Nombre del icono de Lucide
+  href        String
+  bgColor     String   @default("bg-primary-100")
+  iconColor   String   @default("text-primary-600")
+  benefits    String   @db.Text // JSON array de beneficios
+
+  // Contenido de la página individual del servicio
+  fullContent String?  @db.LongText
+
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+
+  @@map("services")
+}
+
+// Métricas/Estadísticas
+model Metric {
+  id          Int      @id @default(autoincrement())
+  updatedAt   DateTime @updatedAt
+
+  number      String   // "15+", "500+", etc.
+  label       String
+  icon        String   // Nombre del icono de Lucide
+
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+
+  @@map("metrics")
+}
+
+// Testimonios
+model Testimonial {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  name        String
+  position    String
+  company     String
+  content     String   @db.Text
+  image       String?
+  rating      Int      @default(5)
+
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+
+  @@map("testimonials")
+}
+
+// Logos de clientes
+model Client {
+  id          Int      @id @default(autoincrement())
+  updatedAt   DateTime @updatedAt
+
+  name        String
+  logo        String   // URL de la imagen
+  website     String?
+
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+
+  @@map("clients")
+}
+
+// Certificaciones
+model Certification {
+  id          Int      @id @default(autoincrement())
+  updatedAt   DateTime @updatedAt
+
+  name        String
+  icon        String   // Nombre del icono de Lucide
+  description String?
+
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+
+  @@map("certifications")
+}
+
+// Oficinas
+model Office {
+  id          Int      @id @default(autoincrement())
+  updatedAt   DateTime @updatedAt
+
+  city        String
+  address     String
+  phone       String
+  email       String?
+  hours       String?
+  mapUrl      String?  @db.Text
+
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+
+  @@map("offices")
+}
+
+// Beneficios ("¿Por qué elegirnos?")
+model Benefit {
+  id          Int      @id @default(autoincrement())
+  updatedAt   DateTime @updatedAt
+
+  title       String
+  description String   @db.Text
+  icon        String   // Nombre del icono de Lucide
+
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+
+  @@map("benefits")
+}
+
+// Secciones Hero (para cada página)
+model HeroSection {
+  id          Int      @id @default(autoincrement())
+  updatedAt   DateTime @updatedAt
+
+  page        String   @unique // "home", "servicios", "contacto", etc.
+  title       String   @db.Text
+  subtitle    String?  @db.Text
+  description String?  @db.Text
+  image       String?
+  ctaText     String?
+  ctaLink     String?
+  ctaSecondaryText String?
+  ctaSecondaryLink String?
+
+  @@map("hero_sections")
+}
+
+// Miembros del equipo
+model TeamMember {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  name        String
+  position    String
+  bio         String?  @db.Text
+  image       String?
+  linkedIn    String?
+  email       String?
+
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+
+  @@map("team_members")
+}
+
+// Posiciones de trabajo
+model JobPosition {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  title       String
+  slug        String   @unique
+  department  String
+  location    String
+  type        String   // "full-time", "part-time", "contract"
+  description String   @db.Text
+  requirements String  @db.Text
+  benefits    String?  @db.Text
+
+  isActive    Boolean  @default(true)
+
+  @@map("job_positions")
+}
+
+// Páginas de contenido (Nosotros, etc.)
+model Page {
+  id          Int      @id @default(autoincrement())
+  updatedAt   DateTime @updatedAt
+
+  slug        String   @unique
+  title       String
+  content     String   @db.LongText
+  metaTitle   String?
+  metaDescription String? @db.Text
+
+  @@map("pages")
+}
+
+// Usuario administrador
+model AdminUser {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  email       String   @unique
+  password    String   // Hash de la contraseña
+  name        String
+
+  isActive    Boolean  @default(true)
+
+  @@map("admin_users")
+}
+
+// ============================================================================
+// FORMULARIOS Y LEADS (ya existentes)
+// ============================================================================
+
+model ContactRequest {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Contact information
+  firstName   String
+  lastName    String
+  email       String
+  phone       String?
+  company     String
+  position    String?
+
+  // Request details
+  service     String   // Which service they're interested in
+  message     String
+  budget      String?  // Budget range
+  timeline    String?  // When they need to start
+
+  // Status tracking
+  status      String   @default("pending") // pending, contacted, qualified, closed
+
+  @@map("contact_requests")
+}
+
+model CareerApplication {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Personal information
+  firstName   String
+  lastName    String
+  email       String
+  phone       String
+
+  // Application details
+  position    String
+  experience  String   // Years of experience
+  education   String?
+  skills      String   // Comma-separated skills
+
+  // CV file information
+  cvFileName  String?
+  cvFileUrl   String?
+
+  // Additional information
+  coverLetter String?
+  availableStart String? // When they can start
+  salary      String?     // Expected salary
+
+  // Status tracking
+  status      String   @default("pending") // pending, reviewing, interview, hired, rejected
+
+  @@map("career_applications")
+}
+
+model NewsletterSubscription {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  email       String   @unique
+  firstName   String?
+  lastName    String?
+  company     String?
+
+  // Subscription preferences
+  isActive    Boolean  @default(true)
+  interests   String?  // JSON string of interests
+
+  @@map("newsletter_subscriptions")
+}
+
+model BlogPost {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  publishedAt DateTime?
+
+  title       String
+  slug        String   @unique
+  excerpt     String?
+  content     String
+
+  // SEO and metadata
+  metaTitle   String?
+  metaDescription String?
+
+  // Categorization
+  category    String
+  tags        String?  // JSON string of tags
+
+  // Publishing
+  isPublished Boolean  @default(false)
+  isFeatured  Boolean  @default(false)
+
+  // Media
+  featuredImage String?
+
+  @@map("blog_posts")
+}
