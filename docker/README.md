@@ -129,8 +129,9 @@ docker/
 - **`install-docker.sh`** - Instala Docker y Docker Compose en producción
 - **`fix-repositories.sh`** - Corrige problemas con repositorios APT
 - **`deploy-production.sh`** - Script automatizado para desplegar en producción
+- **`diagnose-production.sh`** - Diagnóstico de problemas en producción
 
-Ver [INSTALL.md](INSTALL.md) para instrucciones de instalación y [TROUBLESHOOTING.md](TROUBLESHOOTING.md) para solución de problemas.
+Ver [INSTALL.md](INSTALL.md) para instrucciones de instalación, [TROUBLESHOOTING.md](TROUBLESHOOTING.md) para solución de problemas, y [FIX-BLANK-PAGE.md](FIX-BLANK-PAGE.md) para el error de página en blanco.
 
 ## Notas
 

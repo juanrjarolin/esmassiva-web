@@ -339,19 +339,56 @@ docker compose exec mysql mysqladmin ping -h localhost -u root -p$MYSQL_ROOT_PAS
 
 ## 🐛 Troubleshooting
 
-### La aplicación no inicia
+### La aplicación no inicia o muestra página en blanco
 
 ```bash
+# Ejecutar diagnóstico
+cd docker
+chmod +x diagnose-production.sh
+./diagnose-production.sh
+
 # Ver logs detallados
 docker compose logs app
 
 # Verificar variables de entorno
-docker compose exec app env | grep -E "NODE_ENV|DATABASE_URL"
+docker compose exec app env | grep -E "NODE_ENV|DATABASE_URL|BASE_URL"
+
+# Verificar que el build se completó
+docker compose exec app ls -la .output/
 
 # Reconstruir desde cero
 docker compose down -v
-docker compose build --no-cache
+docker compose build --no-cache app
 docker compose up -d
+```
+
+### Error 404 en archivos estáticos (main.tsx, etc.)
+
+Este error generalmente ocurre cuando:
+1. El build no se completó correctamente
+2. BASE_URL no está configurado
+3. Los archivos estáticos no se están sirviendo correctamente
+
+**Solución:**
+
+```bash
+# 1. Verificar que NODE_ENV=production en .env
+cd docker
+grep NODE_ENV .env
+
+# 2. Verificar que el build se completó
+docker compose exec app test -d .output && echo "Build OK" || echo "Build failed"
+
+# 3. Si el build falló, reconstruir
+docker compose down
+docker compose build --no-cache app
+docker compose up -d
+
+# 4. Verificar logs del build
+docker compose logs app | grep -i "build\|error"
+
+# 5. Verificar que BASE_URL esté configurado (opcional pero recomendado)
+# En .env, agrega: BASE_URL=http://tu-dominio.com
 ```
 
 ### Problemas de base de datos

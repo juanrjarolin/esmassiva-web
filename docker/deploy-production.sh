@@ -82,6 +82,27 @@ $DOCKER_COMPOSE_CMD build --no-cache app
 echo -e "\n${YELLOW}Levantando servicios...${NC}"
 $DOCKER_COMPOSE_CMD up -d
 
+# Esperar a que el contenedor esté listo
+echo -e "\n${YELLOW}Esperando a que el contenedor esté listo...${NC}"
+sleep 5
+
+# Verificar que el build se completó (si está en producción)
+if grep -q "NODE_ENV=production" .env 2>/dev/null; then
+    echo -e "\n${YELLOW}Verificando que el build se completó...${NC}"
+    for i in {1..30}; do
+        if $DOCKER_COMPOSE_CMD exec -T app test -d .output 2>/dev/null; then
+            echo -e "${GREEN}✓ Build completado - directorio .output encontrado${NC}"
+            break
+        fi
+        if [ $i -eq 30 ]; then
+            echo -e "${RED}✗ El build no se completó después de 30 intentos${NC}"
+            echo -e "${YELLOW}Revisa los logs: $DOCKER_COMPOSE_CMD logs app${NC}"
+            echo -e "${YELLOW}El servidor puede no funcionar correctamente${NC}"
+        fi
+        sleep 2
+    done
+fi
+
 # Esperar a que los servicios estén listos
 echo -e "\n${YELLOW}Esperando a que los servicios estén listos...${NC}"
 sleep 10

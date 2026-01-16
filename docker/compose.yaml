@@ -90,6 +90,13 @@ services:
         else
           echo "Building for production..."
           pnpm build
+          echo "Verifying build output..."
+          if [ -d ".output" ]; then
+            echo "✓ Build output directory found"
+            ls -la .output/ | head -10
+          else
+            echo "⚠ Warning: .output directory not found"
+          fi
           echo "Running in production mode"
           PORT=3000 pnpm start
         fi
@@ -106,6 +113,8 @@ services:
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
       - MINIO_ENDPOINT=minio
       - MINIO_PORT=9000
+      - BASE_URL=${BASE_URL:-}
+      - PORT=3000
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 10s
