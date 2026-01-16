@@ -20,12 +20,18 @@ Esta guía te ayudará a desplegar Esmassiva en producción usando Docker Compos
 # Navegar a la carpeta docker del proyecto
 cd docker
 
+# Si tienes problemas con repositorios APT, corrígelos primero:
+chmod +x fix-repositories.sh
+sudo bash fix-repositories.sh
+
 # Hacer el script ejecutable
 chmod +x install-docker.sh
 
 # Ejecutar el script de instalación
 sudo bash install-docker.sh
 ```
+
+**Nota:** Si ves errores como "404 Not Found" o "changed its Label", ejecuta primero `fix-repositories.sh` para corregirlos automáticamente.
 
 El script detectará automáticamente:
 - Si Docker ya está instalado

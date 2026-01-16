@@ -124,6 +124,14 @@ docker/
 4. **adminer** - UI para gestionar la BD
 5. **app** - La aplicación Node.js
 
+## Scripts Disponibles
+
+- **`install-docker.sh`** - Instala Docker y Docker Compose en producción
+- **`fix-repositories.sh`** - Corrige problemas con repositorios APT
+- **`deploy-production.sh`** - Script automatizado para desplegar en producción
+
+Ver [INSTALL.md](INSTALL.md) para instrucciones de instalación y [TROUBLESHOOTING.md](TROUBLESHOOTING.md) para solución de problemas.
+
 ## Notas
 
 - La primera vez que levantes, tomará unos minutos mientras instala dependencias y ejecuta el seed.

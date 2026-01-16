@@ -38,6 +38,34 @@ fi
 
 echo -e "${BLUE}Distribución detectada: ${OS} ${VER}${NC}\n"
 
+# Verificar y corregir repositorios si es necesario
+echo -e "${YELLOW}Verificando repositorios de APT...${NC}"
+if apt-get update 2>&1 | grep -qE "404|Release.*does not have|changed its.*Label"; then
+    echo -e "${YELLOW}Se detectaron problemas con los repositorios${NC}"
+    echo -e "${BLUE}Ejecutando corrección automática...${NC}"
+
+    # Eliminar repositorio de certbot obsoleto
+    if grep -r "ppa.launchpad.net/certbot/certbot" /etc/apt/sources.list.d/ >/dev/null 2>&1; then
+        echo -e "${BLUE}  Eliminando repositorio obsoleto de certbot...${NC}"
+        rm -f /etc/apt/sources.list.d/certbot-ubuntu-certbot-*.list
+        rm -f /etc/apt/sources.list.d/certbot-ubuntu-certbot-*.save
+    fi
+
+    # Aceptar cambios en repositorios de ondrej
+    if grep -r "ondrej/apache2\|ondrej/php" /etc/apt/sources.list.d/ >/dev/null 2>&1; then
+        echo -e "${BLUE}  Aceptando cambios en repositorios de ondrej...${NC}"
+        apt-get update -o Acquire::AllowInsecureRepositories=true -o Acquire::AllowDowngradeToInsecureRepositories=true 2>&1 | grep -v "WARNING" || true
+    fi
+
+    # Limpiar cache y actualizar
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
+fi
+
+# Actualizar sistema
+echo -e "${YELLOW}Actualizando lista de paquetes...${NC}"
+apt-get update
+
 # Verificar si Docker ya está instalado
 if command -v docker >/dev/null 2>&1; then
     DOCKER_VERSION=$(docker --version)

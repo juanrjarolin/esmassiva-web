@@ -6,19 +6,28 @@ Para instalar Docker y Docker Compose en tu servidor de producción:
 
 ```bash
 cd docker
+
+# Si tienes problemas con repositorios APT (errores 404, etc.), corrígelos primero:
+chmod +x fix-repositories.sh
+sudo bash fix-repositories.sh
+
+# Instalar Docker
 chmod +x install-docker.sh
 sudo bash install-docker.sh
 ```
 
+**Nota:** El script `install-docker.sh` detecta y corrige automáticamente problemas comunes con repositorios, pero si tienes errores persistentes, ejecuta primero `fix-repositories.sh`.
+
 ## ¿Qué hace el script?
 
 1. **Detecta la distribución** del sistema (Ubuntu/Debian)
-2. **Verifica si Docker está instalado** y su versión
-3. **Instala Docker** si no está presente (usando el repositorio oficial)
-4. **Detecta e instala Docker Compose** (V2 plugin o V1 standalone)
-5. **Inicia y habilita** el servicio Docker
-6. **Agrega tu usuario** al grupo docker
-7. **Verifica** que todo funcione correctamente
+2. **Verifica y corrige repositorios APT** si hay problemas (404, cambios de etiquetas, etc.)
+3. **Verifica si Docker está instalado** y su versión
+4. **Instala Docker** si no está presente (usando el repositorio oficial)
+5. **Detecta e instala Docker Compose** (V2 plugin o V1 standalone)
+6. **Inicia y habilita** el servicio Docker
+7. **Agrega tu usuario** al grupo docker
+8. **Verifica** que todo funcione correctamente
 
 ## Compatibilidad
 
@@ -44,6 +53,23 @@ docker run --rm hello-world
 ```
 
 ## Solución de Problemas
+
+### Error: Repositorios APT con problemas (404, "changed Label", etc.)
+
+Si ves errores al ejecutar `apt-get update`:
+
+```bash
+cd docker
+chmod +x fix-repositories.sh
+sudo bash fix-repositories.sh
+```
+
+Este script:
+- Elimina repositorios obsoletos (como certbot/certbot)
+- Acepta cambios en repositorios (como ondrej/apache2 y ondrej/php)
+- Limpia y actualiza la lista de paquetes
+
+Ver [TROUBLESHOOTING.md](TROUBLESHOOTING.md) para más detalles.
 
 ### Error: "docker compose" no funciona
 
