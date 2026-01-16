@@ -1,3 +1,5 @@
+# Docker Compose busca el .env en el mismo directorio por defecto
+# Si el .env está en la raíz del proyecto, usar: docker compose --env-file ../.env up
 services:
   mysql:
     image: mysql:8

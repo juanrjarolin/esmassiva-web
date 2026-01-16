@@ -63,5 +63,15 @@ else
     exit 1
 fi
 
+# Detectar ubicación del .env (raíz del proyecto o docker/)
+if [ -f ../.env ]; then
+    ENV_FILE="../.env"
+elif [ -f .env ]; then
+    ENV_FILE=".env"
+else
+    echo "Error: No se encontró archivo .env ni en la raíz ni en docker/"
+    exit 1
+fi
+
 # run docker compose with the args
-$DOCKER_COMPOSE_CMD -p "$APP_NAME" --env-file ../.env "$@"
+$DOCKER_COMPOSE_CMD -p "$APP_NAME" --env-file "$ENV_FILE" "$@"

@@ -20,17 +20,23 @@ echo -e "${BLUE}=============================================="
 echo "  Despliegue de Esmassiva en Producción"
 echo -e "==============================================${NC}\n"
 
-# Verificar que existe .env
-if [ ! -f .env ]; then
+# Detectar ubicación del .env (raíz del proyecto o docker/)
+if [ -f ../.env ]; then
+    ENV_FILE="../.env"
+    echo -e "${BLUE}Usando .env de la raíz del proyecto${NC}"
+elif [ -f .env ]; then
+    ENV_FILE=".env"
+    echo -e "${BLUE}Usando .env de la carpeta docker/${NC}"
+else
     echo -e "${RED}Error: No se encontró el archivo .env${NC}"
-    echo "Crea el archivo .env basándote en env.example.txt"
-    echo "  cp env.example.txt .env"
+    echo "Crea el archivo .env en la raíz del proyecto o en docker/"
+    echo "  cp docker/env.example.txt .env"
     echo "  nano .env  # Edita con tus valores de producción"
     exit 1
 fi
 
 # Verificar que NODE_ENV esté en production
-if ! grep -q "NODE_ENV=production" .env; then
+if ! grep -q "NODE_ENV=production" "$ENV_FILE"; then
     echo -e "${YELLOW}Advertencia: NODE_ENV no está configurado como 'production'${NC}"
     read -p "¿Continuar de todos modos? (y/N): " -n 1 -r
     echo
@@ -40,7 +46,7 @@ if ! grep -q "NODE_ENV=production" .env; then
 fi
 
 # Verificar contraseñas por defecto
-if grep -q "ADMIN_PASSWORD=admin123" .env || grep -q "MYSQL_PASSWORD=esmassiva" .env; then
+if grep -q "ADMIN_PASSWORD=admin123" "$ENV_FILE" || grep -q "MYSQL_PASSWORD=esmassiva" "$ENV_FILE"; then
     echo -e "${RED}⚠️  ADVERTENCIA DE SEGURIDAD ⚠️${NC}"
     echo "Has dejado contraseñas por defecto. Esto es INSEGURO en producción."
     read -p "¿Continuar de todos modos? (y/N): " -n 1 -r
@@ -53,9 +59,9 @@ if grep -q "ADMIN_PASSWORD=admin123" .env || grep -q "MYSQL_PASSWORD=esmassiva" 
 fi
 
 # Cargar variables de entorno
-source .env
+source "$ENV_FILE"
 
-echo -e "${GREEN}✓ Archivo .env encontrado${NC}"
+echo -e "${GREEN}✓ Archivo .env encontrado: $ENV_FILE${NC}"
 
 # Detectar qué comando de Docker Compose usar
 if docker compose version >/dev/null 2>&1; then
@@ -76,21 +82,21 @@ $DOCKER_COMPOSE_CMD down
 
 # Construir imágenes
 echo -e "\n${YELLOW}Construyendo imágenes...${NC}"
-$DOCKER_COMPOSE_CMD build --no-cache app
+$DOCKER_COMPOSE_CMD --env-file "$ENV_FILE" build --no-cache app
 
 # Levantar servicios
 echo -e "\n${YELLOW}Levantando servicios...${NC}"
-$DOCKER_COMPOSE_CMD up -d
+$DOCKER_COMPOSE_CMD --env-file "$ENV_FILE" up -d
 
 # Esperar a que el contenedor esté listo
 echo -e "\n${YELLOW}Esperando a que el contenedor esté listo...${NC}"
 sleep 5
 
 # Verificar que el build se completó (si está en producción)
-if grep -q "NODE_ENV=production" .env 2>/dev/null; then
+if grep -q "NODE_ENV=production" "$ENV_FILE" 2>/dev/null; then
     echo -e "\n${YELLOW}Verificando que el build se completó...${NC}"
     for i in {1..30}; do
-        if $DOCKER_COMPOSE_CMD exec -T app test -d .output 2>/dev/null; then
+        if $DOCKER_COMPOSE_CMD --env-file "$ENV_FILE" exec -T app test -d .output 2>/dev/null; then
             echo -e "${GREEN}✓ Build completado - directorio .output encontrado${NC}"
             break
         fi
@@ -109,18 +115,18 @@ sleep 10
 
 # Verificar estado
 echo -e "\n${YELLOW}Verificando estado de los servicios...${NC}"
-$DOCKER_COMPOSE_CMD ps
+$DOCKER_COMPOSE_CMD --env-file "$ENV_FILE" ps
 
 # Verificar health checks
 echo -e "\n${YELLOW}Verificando health checks...${NC}"
 for i in {1..30}; do
-    if $DOCKER_COMPOSE_CMD exec -T app curl -f http://localhost:3000 > /dev/null 2>&1; then
+    if $DOCKER_COMPOSE_CMD --env-file "$ENV_FILE" exec -T app curl -f http://localhost:3000 > /dev/null 2>&1; then
         echo -e "${GREEN}✓ Aplicación está respondiendo${NC}"
         break
     fi
     if [ $i -eq 30 ]; then
         echo -e "${RED}✗ La aplicación no está respondiendo después de 30 intentos${NC}"
-        echo "Revisa los logs: $DOCKER_COMPOSE_CMD logs app"
+        echo "Revisa los logs: $DOCKER_COMPOSE_CMD --env-file \"$ENV_FILE\" logs app"
         exit 1
     fi
     sleep 2
@@ -140,10 +146,10 @@ if [ "${LISTEN_IP:-127.0.0.1}" = "0.0.0.0" ]; then
 fi
 
 echo -e "\n${BLUE}Comandos útiles:${NC}"
-echo "  Ver logs: $DOCKER_COMPOSE_CMD logs -f app"
-echo "  Estado: $DOCKER_COMPOSE_CMD ps"
-echo "  Reiniciar: $DOCKER_COMPOSE_CMD restart app"
-echo "  Detener: $DOCKER_COMPOSE_CMD down"
+echo "  Ver logs: $DOCKER_COMPOSE_CMD --env-file \"$ENV_FILE\" logs -f app"
+echo "  Estado: $DOCKER_COMPOSE_CMD --env-file \"$ENV_FILE\" ps"
+echo "  Reiniciar: $DOCKER_COMPOSE_CMD --env-file \"$ENV_FILE\" restart app"
+echo "  Detener: $DOCKER_COMPOSE_CMD --env-file \"$ENV_FILE\" down"
 
 echo -e "\n${YELLOW}⚠️  Recordatorios de Seguridad:${NC}"
 echo "  - Cambia todas las contraseñas por defecto"

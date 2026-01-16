@@ -8,7 +8,8 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 import { consoleForwardPlugin } from "./vite-console-forward-plugin";
 
 // Obtener base path de la variable de entorno
-const basePath = env.BASE_PATH || "";
+// Si BASE_PATH no está definido, usar string vacío (raíz)
+const basePath = (env.BASE_PATH?.trim() || "").replace(/\/+$/, ""); // Remover trailing slashes
 
 export default createApp({
   server: {
@@ -27,7 +28,7 @@ export default createApp({
     {
       type: "http",
       name: "trpc",
-      base: `${basePath}/trpc`,
+      base: basePath ? `${basePath}/trpc` : "/trpc",
       handler: "./src/server/trpc/handler.ts",
       target: "server",
       plugins: () => [
@@ -47,7 +48,7 @@ export default createApp({
     {
       type: "http",
       name: "debug",
-      base: `${basePath}/api/debug/client-logs`,
+      base: basePath ? `${basePath}/api/debug/client-logs` : "/api/debug/client-logs",
       handler: "./src/server/debug/client-logs-handler.ts",
       target: "server",
       plugins: () => [
@@ -96,7 +97,7 @@ export default createApp({
         nodePolyfills(),
         consoleForwardPlugin({
           enabled: true,
-          endpoint: `${basePath}/api/debug/client-logs`,
+          endpoint: basePath ? `${basePath}/api/debug/client-logs` : "/api/debug/client-logs",
           levels: ["log", "warn", "error", "info", "debug"],
         }),
       ],
