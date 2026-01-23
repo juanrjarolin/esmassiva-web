@@ -82,7 +82,7 @@ export default createApp({
         }),
         config("vite", {
           // @ts-ignore
-          base: basePath || "/",
+          base: basePath ? `${basePath}/` : "/",
         }),
         tsConfigPaths({
           projects: ["./tsconfig.json"],
