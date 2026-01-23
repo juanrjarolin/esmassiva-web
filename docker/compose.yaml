@@ -13,9 +13,8 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-esmassiva}
     ports:
       - "${LISTEN_IP:-127.0.0.1}:3309:3306"
-    command: --default-authentication-plugin=mysql_native_password
     healthcheck:
-      test: ["CMD", "sh", "-c", "mysqladmin ping -h localhost -u root -p${MYSQL_ROOT_PASSWORD:-root}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
       interval: 5s
       timeout: 5s
       retries: 10
