@@ -131,7 +131,7 @@ services:
       - MINIO_ENDPOINT=minio
       - MINIO_PORT=9000
       - BASE_URL=${BASE_URL:-}
-      - BASE_PATH=${BASE_PATH:-/esmassiva-web}
+      - BASE_PATH=${BASE_PATH:-}
       - PORT=3000
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
