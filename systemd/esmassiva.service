@@ -1,0 +1,33 @@
+[Unit]
+Description=Esmassiva Web Application
+After=network.target mysql.service
+Requires=mysql.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/html/esmassiva-web
+Environment="NODE_ENV=production"
+Environment="PORT=3000"
+
+# Cargar variables de entorno desde .env
+EnvironmentFile=/var/www/html/esmassiva-web/.env
+
+# Comando de inicio
+ExecStart=/usr/bin/pnpm start
+Restart=always
+RestartSec=10
+
+# Límites de recursos
+LimitNOFILE=65536
+MemoryMax=2G
+
+# Logs
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=esmassiva
+
+[Install]
+WantedBy=multi-user.target
+
