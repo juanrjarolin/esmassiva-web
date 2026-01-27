@@ -30,9 +30,6 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    volumes:
-      - ../:/app
-      - node-modules-cache:/app/node_modules
     environment:
       DATABASE_URL: mysql://esmassiva:${MYSQL_PASSWORD:-esmassiva}@mysql:3306/esmassiva
       NODE_ENV: production
