@@ -58,7 +58,7 @@ services:
     depends_on:
       - app
     ports:
-      - "80:80"   # solo este puerto al host
+      - "8080:80"   # solo este puerto al host
     networks:
       - internal
       - default  # para exponer a la red pública si hay otros contenedores
