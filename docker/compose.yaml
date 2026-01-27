@@ -46,6 +46,7 @@ services:
       - DATABASE_URL=mysql://esmassiva:${MYSQL_PASSWORD:-esmassiva}@mysql:3306/esmassiva
       - NODE_ENV=production
       - PORT=3000
+      - HOST=0.0.0.0
     expose:
       - "3000"
     networks:
