@@ -1,3 +1,4 @@
+
 services:
   mysql:
     image: mysql:8
@@ -9,7 +10,6 @@ services:
       MYSQL_DATABASE: esmassiva
       MYSQL_USER: esmassiva
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-esmassiva}
-    # no expone puertos al host si no es necesario
     networks:
       - internal
 
@@ -24,33 +24,36 @@ services:
     networks:
       - internal
     ports:
-      - "9001:9001"  # opcional, solo si querés acceso al panel web
+      - "9001:9001"
 
   app:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    depends_on:
-      - mysql
-      - minio
-    command: >
-      /usr/bin/tini -- bash -c '
-        pnpm build
-        PORT=3000 pnpm start
-      '
-    working_dir: /app
     volumes:
       - ../:/app
       - node-modules-cache:/app/node_modules
     environment:
-      - DATABASE_URL=mysql://esmassiva:${MYSQL_PASSWORD:-esmassiva}@mysql:3306/esmassiva
-      - NODE_ENV=production
-      - PORT=3000
-      - HOST=0.0.0.0
+      DATABASE_URL: mysql://esmassiva:${MYSQL_PASSWORD:-esmassiva}@mysql:3306/esmassiva
+      NODE_ENV: production
+      PORT: 3000
+      HOST: 0.0.0.0
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
     expose:
       - "3000"
+    depends_on:
+      - mysql
+      - minio
     networks:
       - internal
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
 
   nginx:
     image: nginx:latest
@@ -59,10 +62,10 @@ services:
     depends_on:
       - app
     ports:
-      - "80:80"   # solo este puerto al host
+      - "80:80"
     networks:
       - internal
-      - default  # para exponer a la red pública si hay otros contenedores
+      - default
 
   adminer:
     image: adminer:latest
