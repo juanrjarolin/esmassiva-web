@@ -113,9 +113,9 @@ echo "  🎉 ¡Despliegue completado!"
 echo -e "==============================================${NC}"
 
 echo -e "${BLUE}URLs de acceso:${NC}"
-echo "  🌐 Aplicación: http://tu-dominio.com (puerto 80)"
-echo "  🔧 Adminer: http://tu-dominio.com:8081"
-echo "  📦 MinIO Console: http://tu-dominio.com:9001"
+echo "  🌐 Aplicación: http://tu-servidor:8000"
+echo "  🔧 Adminer: http://tu-servidor:8081"
+echo "  📦 MinIO Console: http://tu-servidor:9001"
 
 echo -e "\n${YELLOW}Comandos útiles:${NC}"
 echo "  Ver logs: $DOCKER_COMPOSE_CMD --env-file .env logs -f"
