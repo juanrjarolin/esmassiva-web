@@ -1,28 +1,35 @@
-app:
-  build:
-    context: ..         # Esto apunta al directorio padre donde esté todo tu proyecto
-    dockerfile: docker/Dockerfile
-  volumes:
-    - ../:/app          # Solo si querés hot-reload en dev
-    - node-modules-cache:/app/node_modules
-  environment:
-    DATABASE_URL: mysql://esmassiva:${MYSQL_PASSWORD:-esmassiva}@mysql:3306/esmassiva
-    NODE_ENV: production
-    PORT: 3000
-    HOST: 0.0.0.0
-    ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
-    MINIO_ENDPOINT: minio
-    MINIO_PORT: 9000
-  expose:
-    - "3000"
-  depends_on:
-    - mysql
-    - minio
-  networks:
-    - internal
-  healthcheck:
-    test: ["CMD", "curl", "-f", "http://localhost:3000"]
-    interval: 10s
-    timeout: 5s
-    retries: 30
-    start_period: 60s
+services:
+  mysql:
+    image: mysql:8
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: esmassiva
+      MYSQL_USER: esmassiva
+      MYSQL_PASSWORD: esmassiva
+    networks:
+      - internal
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: admin123
+    ports:
+      - "9001:9001"
+    networks:
+      - internal
+
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ../:/app
+      - node-modules-cache:/app/node_modules
+    environment:
+      DATABASE_URL: mysql://esmassiva:esmassiva@mysql:3306/esmassiva
+      NODE_ENV: production
+      PORT: 3000
+      HOST: 0.
