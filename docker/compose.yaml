@@ -65,7 +65,6 @@ services:
       - "80:80"
     networks:
       - internal
-      - default
 
   adminer:
     image: adminer:latest
