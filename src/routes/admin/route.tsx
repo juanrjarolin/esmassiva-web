@@ -1,5 +1,6 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { useTRPC } from "~/trpc/react";
 import {
   LayoutDashboard,
@@ -86,7 +87,6 @@ function AdminLayout() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
   const [loginError, setLoginError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
   const trpc = useTRPC();
 
@@ -97,7 +97,21 @@ function AdminLayout() {
     }
   }, []);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const loginMutation = useMutation(
+    trpc.adminUsers.login.mutationOptions({
+      onSuccess: (data) => {
+        localStorage.setItem("adminSession", JSON.stringify(data));
+        setIsLoggedIn(true);
+        setLoginError("");
+        setLoginForm({ email: "", password: "" });
+      },
+      onError: (error: any) => {
+        setLoginError(error.message || "Credenciales inválidas");
+      },
+    })
+  );
+
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError("");
     
@@ -106,21 +120,7 @@ function AdminLayout() {
       return;
     }
 
-    setIsLoading(true);
-    try {
-      const result = await trpc.adminUsers.login.mutate({
-        email: loginForm.email,
-        password: loginForm.password,
-      });
-      localStorage.setItem("adminSession", JSON.stringify(result));
-      setIsLoggedIn(true);
-      setLoginError("");
-      setLoginForm({ email: "", password: "" });
-    } catch (error: any) {
-      setLoginError(error.message || "Credenciales inválidas");
-    } finally {
-      setIsLoading(false);
-    }
+    loginMutation.mutate(loginForm);
   };
 
   const handleLogout = () => {
@@ -190,10 +190,10 @@ function AdminLayout() {
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={loginMutation.isPending}
               className="w-full bg-primary-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? "Validando..." : "Iniciar Sesión"}
+              {loginMutation.isPending ? "Validando..." : "Iniciar Sesión"}
             </button>
           </form>
         </div>
