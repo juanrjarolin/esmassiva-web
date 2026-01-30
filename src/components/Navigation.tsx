@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Menu, X, Phone, Mail, ChevronDown, ShoppingCart, Headphones, CreditCard, Building2, TrendingUp, Users, Globe, Shield, Award, Star, CheckCircle, MapPin, Zap, Target } from "lucide-react";
 import { useTRPC } from "~/trpc/react";
 import { useQuery } from "@tanstack/react-query";
-import logoEsmassiva from "../../public/logo-esmassiva.png";
 
 // Icon mapping helper
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -67,7 +66,7 @@ export function Navigation() {
             <div className="flex-shrink-0">
               <a href="/" className="flex items-center">
                 <img
-                  src={logoEsmassiva}
+                  src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjREU3ODM1IiBmaWxsLW9wYWNpdHk9IjAuMSIgcng9IjEwIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1zaXplPSI0MCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiNERTc4MzUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5FPC90ZXh0Pgo8L3N2Zz4="
                   alt="Esmassiva"
                   className="h-12 mr-3"
                 />
