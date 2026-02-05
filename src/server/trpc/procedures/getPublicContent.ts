@@ -149,7 +149,7 @@ export const publicContentRouter = router({
 
   // Get homepage data (all in one call for better performance)
   getHomepageData: baseProcedure.query(async () => {
-    const [services, metrics, testimonials, clients, certifications, offices, benefits, hero] = await Promise.all([
+    const [services, metrics, testimonials, clients, certifications, offices, benefits, hero, settingsRows, featuredPost] = await Promise.all([
       db.service.findMany({ where: { isActive: true }, orderBy: { order: "asc" } }),
       db.metric.findMany({ where: { isActive: true }, orderBy: { order: "asc" } }),
       db.testimonial.findMany({ where: { isActive: true }, orderBy: { order: "asc" } }),
@@ -158,7 +158,17 @@ export const publicContentRouter = router({
       db.office.findMany({ where: { isActive: true }, orderBy: { order: "asc" } }),
       db.benefit.findMany({ where: { isActive: true }, orderBy: { order: "asc" } }),
       db.heroSection.findUnique({ where: { page: "home" } }),
+      db.siteSettings.findMany(),
+      db.blogPost.findFirst({
+        where: { isPublished: true },
+        orderBy: [{ isFeatured: "desc" }, { publishedAt: "desc" }],
+      }),
     ]);
+
+    const settings = settingsRows.reduce((acc, s) => {
+      acc[s.key] = s.value;
+      return acc;
+    }, {} as Record<string, string>);
 
     return {
       services: services.map(s => ({
@@ -172,6 +182,14 @@ export const publicContentRouter = router({
       offices,
       benefits,
       hero,
+      settings,
+      featuredPost: featuredPost ? {
+        title: featuredPost.title,
+        slug: featuredPost.slug,
+        excerpt: featuredPost.excerpt || featuredPost.content.slice(0, 160) + "...",
+        featuredImage: featuredPost.featuredImage,
+        isFeatured: featuredPost.isFeatured,
+      } : null,
     };
   }),
 });

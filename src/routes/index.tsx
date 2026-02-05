@@ -28,6 +28,8 @@ function Home() {
   const offices = data?.offices || [];
   const benefits = data?.benefits || [];
   const hero = data?.hero;
+  const s = data?.settings || {};
+  const t = (key: string, fallback: string) => (s[key] && s[key].trim() !== "" ? s[key] : fallback);
 
   return (
     <div className="min-h-screen bg-white">
@@ -87,14 +89,14 @@ function Home() {
                   <div className="flex items-center">
                     <div className="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse"></div>
                     <span className="text-sm font-medium text-secondary-700">
-                      En línea: 1,247 agentes
+                      {t("home_hero_badge_line", "En línea: 1,247 agentes")}
                     </span>
                   </div>
                 </div>
                 <div className="absolute -top-6 -right-6 bg-primary-600 text-white p-4 rounded-2xl shadow-xl">
                   <div className="text-center">
-                    <div className="text-lg font-bold">24/7</div>
-                    <div className="text-xs opacity-90">Disponibilidad</div>
+                    <div className="text-lg font-bold">{t("home_hero_badge_24h_title", "24/7")}</div>
+                    <div className="text-xs opacity-90">{t("home_hero_badge_24h_subtitle", "Disponibilidad")}</div>
                   </div>
                 </div>
               </div>
@@ -109,7 +111,7 @@ function Home() {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
               <p className="text-secondary-600 font-medium">
-                Empresas líderes confían en Esmassiva
+                {t("home_clients_title", "Empresas líderes confían en Esmassiva")}
               </p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center">
@@ -135,11 +137,10 @@ function Home() {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-5xl font-bold text-secondary-900 mb-6">
-                Nuestros <span className="text-primary-600">Servicios</span>
+                {t("home_services_title", "Nuestros")} <span className="text-primary-600">{t("home_services_title_highlight", "Servicios")}</span>
               </h2>
               <p className="text-xl text-secondary-600 max-w-3xl mx-auto leading-relaxed">
-                Soluciones completas diseñadas para cada etapa del customer journey
-                y optimizadas para el mercado latinoamericano
+                {t("home_services_subtitle", "Soluciones completas diseñadas para cada etapa del customer journey y optimizadas para el mercado latinoamericano")}
               </p>
             </div>
 
@@ -169,7 +170,7 @@ function Home() {
                       ))}
                     </ul>
                     <a href={service.href} className="text-primary-600 font-semibold hover:text-primary-700 transition-colors flex items-center">
-                      Conocer más
+                      {t("home_services_cta", "Conocer más")}
                       <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     </a>
                   </div>
@@ -178,8 +179,8 @@ function Home() {
             </div>
 
             <div className="text-center">
-              <a href="/servicios" className="bg-primary-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-primary-700 transition-colors shadow-lg inline-block">
-                Ver Todos los Servicios
+              <a href={t("home_services_btn_link", "/servicios")} className="bg-primary-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-primary-700 transition-colors shadow-lg inline-block">
+                {t("home_services_btn", "Ver Todos los Servicios")}
               </a>
             </div>
           </div>
@@ -192,10 +193,10 @@ function Home() {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-4">
-                ¿Por qué elegir Esmassiva?
+                {t("home_benefits_title", "¿Por qué elegir Esmassiva?")}
               </h2>
               <p className="text-xl text-secondary-600 max-w-2xl mx-auto">
-                Ventajas competitivas que nos posicionan como líderes en la industria
+                {t("home_benefits_subtitle", "Ventajas competitivas que nos posicionan como líderes en la industria")}
               </p>
             </div>
 
@@ -223,10 +224,10 @@ function Home() {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-4">
-                Lo que dicen nuestros clientes
+                {t("home_testimonials_title", "Lo que dicen nuestros clientes")}
               </h2>
               <p className="text-xl text-secondary-600 max-w-2xl mx-auto">
-                Testimonios reales de empresas que han transformado su negocio con Esmassiva
+                {t("home_testimonials_subtitle", "Testimonios reales de empresas que han transformado su negocio con Esmassiva")}
               </p>
             </div>
 
@@ -273,10 +274,10 @@ function Home() {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-4">
-                Certificaciones
+                {t("home_certifications_title", "Certificaciones")}
               </h2>
               <p className="text-xl text-secondary-600 max-w-2xl mx-auto">
-                Estándares internacionales que garantizan la calidad de nuestros servicios
+                {t("home_certifications_subtitle", "Estándares internacionales que garantizan la calidad de nuestros servicios")}
               </p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 justify-items-center">
@@ -299,10 +300,10 @@ function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-4">
-              Mantente Conectado con <span className="text-primary-600">Esmassiva</span>
+              {t("home_newsletter_title", "Mantente Conectado con Esmassiva")}
             </h2>
             <p className="text-xl text-secondary-600 max-w-3xl mx-auto">
-              Sé parte de una comunidad que está transformando las experiencias de cliente. Recibe insights exclusivos, casos de éxito y estrategias accionables directamente en tu correo.
+              {t("home_newsletter_subtitle", "Sé parte de una comunidad que está transformando las experiencias de cliente. Recibe insights exclusivos, casos de éxito y estrategias accionables directamente en tu correo.")}
             </p>
           </div>
 
@@ -312,13 +313,23 @@ function Home() {
                 variant="inline"
                 showNameFields={false}
                 className="h-full"
+                title={t("home_newsletter_form_title", "Inspírate con historias e insights de marcas que transforman sus industrias.")}
+                description={t("home_newsletter_form_description", "Únete a miles de profesionales que reciben insights exclusivos, casos de éxito y estrategias accionables directamente en su bandeja de entrada.")}
               />
             </div>
             <div className="lg:col-span-1">
-              <RecentContentPreview className="h-full" />
+              <RecentContentPreview className="h-full" post={data?.featuredPost ?? null} />
             </div>
             <div className="lg:col-span-1">
-              <SocialMediaModule className="h-full" />
+              <SocialMediaModule
+                className="h-full"
+                title={t("home_social_title", "Conéctate con nosotros")}
+                description={t("home_social_description", "Únete a más de 2,000 profesionales que ya nos siguen para recibir actualizaciones, insights e ideas que transforman negocios.")}
+                facebook={s.facebook}
+                instagram={s.instagram}
+                linkedin={s.linkedin}
+                tiktok={s.tiktok}
+              />
             </div>
           </div>
         </div>
@@ -330,10 +341,10 @@ function Home() {
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-4">
-                Nuestras Oficinas
+                {t("home_offices_title", "Nuestras Oficinas")}
               </h2>
               <p className="text-xl text-secondary-600 max-w-2xl mx-auto">
-                Presencia estratégica para estar cerca de nuestros clientes
+                {t("home_offices_subtitle", "Presencia estratégica para estar cerca de nuestros clientes")}
               </p>
             </div>
             <div className="flex justify-center flex-wrap gap-8">
@@ -356,23 +367,22 @@ function Home() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-            ¿Listo para transformar tu negocio?
+            {t("home_cta_title", "¿Listo para transformar tu negocio?")}
           </h2>
           <p className="text-xl text-primary-100 mb-8 leading-relaxed">
-            Descubre cómo Esmassiva puede optimizar tus procesos, reducir costos
-            y mejorar la experiencia de tus clientes con soluciones personalizadas.
+            {t("home_cta_description", "Descubre cómo Esmassiva puede optimizar tus procesos, reducir costos y mejorar la experiencia de tus clientes con soluciones personalizadas.")}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <a href="/contacto" className="bg-white text-primary-600 px-8 py-4 rounded-xl font-semibold hover:bg-secondary-50 transition-colors shadow-lg flex items-center justify-center">
               <CheckCircle className="w-5 h-5 mr-2" />
-              Solicitar Propuesta Gratuita
+              {t("home_cta_btn_primary", "Solicitar Propuesta Gratuita")}
             </a>
             <a href="/contacto" className="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-primary-600 transition-colors">
-              Agendar Reunión
+              {t("home_cta_btn_secondary", "Agendar Reunión")}
             </a>
           </div>
           <p className="text-primary-200 text-sm">
-            Respuesta en menos de 24 horas • Sin compromiso • Consulta gratuita
+            {t("home_cta_footer", "Respuesta en menos de 24 horas • Sin compromiso • Consulta gratuita")}
           </p>
         </div>
       </section>

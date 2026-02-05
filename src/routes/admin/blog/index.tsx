@@ -64,6 +64,7 @@ function BlogAdmin() {
       onSuccess: (data) => {
         queryClient.invalidateQueries(trpc.blogPosts.list.queryOptions());
         queryClient.invalidateQueries(trpc.content.getBlogPosts.queryOptions({ limit: 10 }));
+        queryClient.invalidateQueries(trpc.content.getHomepageData.queryOptions());
         if (data?.slug) {
           queryClient.invalidateQueries(trpc.content.getBlogPostBySlug.queryOptions({ slug: data.slug }));
         }
@@ -85,6 +86,7 @@ function BlogAdmin() {
       onSuccess: (data) => {
         queryClient.invalidateQueries(trpc.blogPosts.list.queryOptions());
         queryClient.invalidateQueries(trpc.content.getBlogPosts.queryOptions({ limit: 10 }));
+        queryClient.invalidateQueries(trpc.content.getHomepageData.queryOptions());
         if (data?.slug) {
           queryClient.invalidateQueries(trpc.content.getBlogPostBySlug.queryOptions({ slug: data.slug }));
         }
@@ -106,6 +108,7 @@ function BlogAdmin() {
       onSuccess: () => {
         queryClient.invalidateQueries(trpc.blogPosts.list.queryOptions());
         queryClient.invalidateQueries(trpc.content.getBlogPosts.queryOptions({ limit: 10 }));
+        queryClient.invalidateQueries(trpc.content.getHomepageData.queryOptions());
         queryClient.invalidateQueries({
           queryKey: ["trpc", "content", "getBlogPostBySlug"],
           exact: false,

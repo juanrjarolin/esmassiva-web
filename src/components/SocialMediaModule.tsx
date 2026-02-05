@@ -16,90 +16,65 @@ function TikTokIcon({ className = "w-6 h-6" }: { className?: string }) {
 
 interface SocialMediaModuleProps {
   className?: string;
+  title?: string;
+  description?: string;
+  facebook?: string;
+  instagram?: string;
+  linkedin?: string;
+  tiktok?: string;
 }
 
-export function SocialMediaModule({ className = "" }: SocialMediaModuleProps) {
+const defaultTitle = "Conéctate con nosotros";
+const defaultDescription = "Únete a más de 2,000 profesionales que ya nos siguen para recibir actualizaciones, insights e ideas que transforman negocios.";
+const defaultFb = "https://www.facebook.com/esmassiva";
+const defaultIg = "https://www.instagram.com/esmassiva";
+const defaultLi = "https://www.linkedin.com/company/esmassiva";
+const defaultTk = "https://www.tiktok.com/@esmassiva";
+
+export function SocialMediaModule({
+  className = "",
+  title = defaultTitle,
+  description = defaultDescription,
+  facebook = defaultFb,
+  instagram = defaultIg,
+  linkedin = defaultLi,
+  tiktok = defaultTk,
+}: SocialMediaModuleProps) {
+  const links = [
+    { href: facebook?.trim() || defaultFb, label: "Facebook", handle: "@esmassiva", Icon: Facebook, color: '#1877F2' },
+    { href: instagram?.trim() || defaultIg, label: "Instagram", handle: "@esmassiva", Icon: Instagram, color: 'linear-gradient(45deg, #E1306C 0%, #F77737 50%, #FCAF45 100%)' },
+    { href: linkedin?.trim() || defaultLi, label: "LinkedIn", handle: "Esmassiva", Icon: Linkedin, color: '#0A66C2' },
+    { href: tiktok?.trim() || defaultTk, label: "TikTok", handle: "@esmassiva", Icon: TikTokIcon, color: '#000000' },
+  ].filter((l) => l.href);
+
   return (
     <div className={`bg-white p-8 rounded-2xl shadow-lg border border-gray-200 ${className}`}>
-      <h3 className="text-2xl font-bold mb-4 text-secondary-900">Conéctate con nosotros</h3>
+      <h3 className="text-2xl font-bold mb-4 text-secondary-900">{title || defaultTitle}</h3>
       <p className="text-secondary-600 mb-6 leading-relaxed">
-        Únete a más de 2,000 profesionales que ya nos siguen para recibir actualizaciones, insights e ideas que transforman negocios.
+        {description || defaultDescription}
       </p>
-      
+
       <div className="space-y-3">
-        <a
-          href="https://www.facebook.com/esmassiva"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center p-4 rounded-xl transition-all duration-300 group hover:shadow-md"
-        >
-          <div 
-            className="w-12 h-12 rounded-lg flex items-center justify-center mr-4 group-hover:scale-110 transition-transform"
-            style={{ backgroundColor: '#1877F2' }}
+        {links.map(({ href, label, handle, Icon, color }) => (
+          <a
+            key={label}
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center p-4 rounded-xl transition-all duration-300 group hover:shadow-md"
           >
-            <Facebook className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <div className="font-semibold text-secondary-900">Facebook</div>
-            <div className="text-sm text-secondary-600">@esmassiva</div>
-          </div>
-        </a>
-
-        <a
-          href="https://www.instagram.com/esmassiva"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center p-4 rounded-xl transition-all duration-300 group hover:shadow-md"
-        >
-          <div 
-            className="w-12 h-12 rounded-lg flex items-center justify-center mr-4 group-hover:scale-110 transition-transform"
-            style={{ 
-              background: 'linear-gradient(45deg, #E1306C 0%, #F77737 50%, #FCAF45 100%)'
-            }}
-          >
-            <Instagram className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <div className="font-semibold text-secondary-900">Instagram</div>
-            <div className="text-sm text-secondary-600">@esmassiva</div>
-          </div>
-        </a>
-
-        <a
-          href="https://www.linkedin.com/company/esmassiva"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center p-4 rounded-xl transition-all duration-300 group hover:shadow-md"
-        >
-          <div 
-            className="w-12 h-12 rounded-lg flex items-center justify-center mr-4 group-hover:scale-110 transition-transform"
-            style={{ backgroundColor: '#0A66C2' }}
-          >
-            <Linkedin className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <div className="font-semibold text-secondary-900">LinkedIn</div>
-            <div className="text-sm text-secondary-600">Esmassiva</div>
-          </div>
-        </a>
-
-        <a
-          href="https://www.tiktok.com/@esmassiva"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center p-4 rounded-xl transition-all duration-300 group hover:shadow-md"
-        >
-          <div 
-            className="w-12 h-12 rounded-lg flex items-center justify-center mr-4 group-hover:scale-110 transition-transform"
-            style={{ backgroundColor: '#000000' }}
-          >
-            <TikTokIcon className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <div className="font-semibold text-secondary-900">TikTok</div>
-            <div className="text-sm text-secondary-600">@esmassiva</div>
-          </div>
-        </a>
+            <div
+              className="w-12 h-12 rounded-lg flex items-center justify-center mr-4 group-hover:scale-110 transition-transform"
+              style={{ backgroundColor: label === "Instagram" ? undefined : color, background: label === "Instagram" ? color : undefined }}
+            >
+              <Icon className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <div className="font-semibold text-secondary-900">{label}</div>
+              <div className="text-sm text-secondary-600">{handle}</div>
+            </div>
+          </a>
+        ))}
       </div>
     </div>
   );
