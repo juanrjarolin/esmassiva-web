@@ -12,6 +12,7 @@ const jobPositionInput = z.object({
   description: z.string().min(1),
   requirements: z.string().min(1),
   benefits: z.string().optional(),
+  image: z.string().optional(),
   isActive: z.boolean().default(true),
 });
 

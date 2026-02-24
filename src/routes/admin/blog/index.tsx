@@ -386,28 +386,35 @@ function BlogAdmin() {
                   </div>
                 </div>
 
-                <div>
+                <div className="border-t border-slate-200 pt-6">
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Extracto
+                    <span className="font-semibold">Extracto</span>
+                    <span className="text-xs text-slate-500 ml-2">(Opcional - Se muestra antes del contenido completo)</span>
                   </label>
                   <textarea
-                    value={form.excerpt}
+                    value={form.excerpt || ""}
                     onChange={(e) => setForm(prev => ({ ...prev, excerpt: e.target.value }))}
                     className="w-full px-3 py-2 border border-slate-300 rounded-xl"
-                    rows={2}
+                    rows={3}
+                    placeholder="Resumen breve del artículo que aparecerá en la lista de posts y antes del contenido completo..."
                   />
+                  <p className="text-xs text-slate-500 mt-1">
+                    Si no se proporciona un extracto, se usará el inicio del contenido automáticamente.
+                  </p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Contenido *
+                    <span className="font-semibold">Contenido *</span>
+                    <span className="text-xs text-slate-500 ml-2">(Contenido completo del artículo)</span>
                   </label>
                   <textarea
                     value={form.content}
                     onChange={(e) => setForm(prev => ({ ...prev, content: e.target.value }))}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl"
-                    rows={10}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono text-sm"
+                    rows={15}
                     required
+                    placeholder="Contenido completo del artículo. Puedes usar HTML o Markdown..."
                   />
                 </div>
 

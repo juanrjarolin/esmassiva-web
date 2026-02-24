@@ -82,11 +82,10 @@ export default defineEventHandler(async (event) => {
       }
     );
 
-    // Return success with public URL
-    const baseUrl = request.headers.get("origin") || new URL(request.url).origin;
+    // Return success with public URL (relative URL)
     const basePath = process.env.BASE_PATH?.trim() || "";
     const apiBase = basePath ? `${basePath}/api/images` : "/api/images";
-    const publicUrl = `${baseUrl}${apiBase}/${bucketName}/${objectName}`;
+    const publicUrl = `${apiBase}/${bucketName}/${objectName}`;
 
     return new Response(
       JSON.stringify({

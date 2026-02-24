@@ -257,33 +257,44 @@ function CarrerasPage() {
                   "remote": "Remoto",
                 };
                 return (
-                  <div key={job.id} className="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-xl transition-shadow">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold text-secondary-900 mb-2">{job.title}</h3>
-                        <div className="flex items-center text-slate-600 text-sm mb-2">
-                          <Briefcase className="w-4 h-4 mr-1" />
-                          <span>{job.department}</span>
-                        </div>
-                        <div className="flex items-center text-slate-600 text-sm">
-                          <MapPin className="w-4 h-4 mr-1" />
-                          <span>{job.location}</span>
+                  <div key={job.id} className="bg-white border border-slate-200 rounded-2xl overflow-hidden hover:shadow-xl transition-shadow">
+                    {job.image && (
+                      <div className="relative h-48 w-full">
+                        <img
+                          src={job.image}
+                          alt={job.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-secondary-900 mb-2">{job.title}</h3>
+                          <div className="flex items-center text-slate-600 text-sm mb-2">
+                            <Briefcase className="w-4 h-4 mr-1" />
+                            <span>{job.department}</span>
+                          </div>
+                          <div className="flex items-center text-slate-600 text-sm">
+                            <MapPin className="w-4 h-4 mr-1" />
+                            <span>{job.location}</span>
+                          </div>
                         </div>
                       </div>
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-medium">
+                          {typeLabels[job.type] || job.type}
+                        </span>
+                      </div>
+                      <p className="text-slate-600 text-sm mb-4 line-clamp-3">{job.description}</p>
+                      <Link
+                        to="/carreras/$slug"
+                        params={{ slug: job.slug }}
+                        className="inline-flex items-center justify-center w-full bg-primary-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-primary-700 transition-colors"
+                      >
+                        Ver Detalles
+                      </Link>
                     </div>
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-medium">
-                        {typeLabels[job.type] || job.type}
-                      </span>
-                    </div>
-                    <p className="text-slate-600 text-sm mb-4 line-clamp-3">{job.description}</p>
-                    <Link
-                      to="/carreras/$slug"
-                      params={{ slug: job.slug }}
-                      className="inline-flex items-center justify-center w-full bg-primary-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-primary-700 transition-colors"
-                    >
-                      Ver Detalles
-                    </Link>
                   </div>
                 );
               })}

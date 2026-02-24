@@ -64,6 +64,15 @@ function JobDetailPage() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Volver a Vacantes
           </Link>
+          {job.image && (
+            <div className="mb-6 rounded-2xl overflow-hidden">
+              <img
+                src={job.image}
+                alt={job.title}
+                className="w-full h-64 md:h-96 object-cover"
+              />
+            </div>
+          )}
           <div className="bg-white rounded-2xl shadow-lg p-8">
             <div className="flex items-start justify-between mb-6">
               <div className="flex-1">

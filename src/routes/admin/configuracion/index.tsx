@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useTRPC } from "~/trpc/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Save, Globe, Mail, Phone, MapPin, Facebook, Instagram, Linkedin, Twitter, Home, Users } from "lucide-react";
+import { Save, Globe, Mail, Phone, MapPin, Facebook, Instagram, Linkedin, Twitter, Home, Users, Target, Eye } from "lucide-react";
 import toast from "react-hot-toast";
 import { ImageUpload } from "~/components/admin/ImageUpload";
 
@@ -284,6 +284,45 @@ function ConfiguracionAdmin() {
                 <MapPin className="w-4 h-4 inline mr-1" /> Dirección
               </label>
               <input type="text" value={form.address} onChange={(e) => setForm(prev => ({ ...prev, address: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+            </div>
+          </div>
+        </div>
+
+        {/* Nosotros */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center">
+            <Users className="w-5 h-5 mr-2 text-primary-600" />
+            Página Nosotros
+          </h2>
+          <p className="text-slate-600 text-sm mb-6">Contenido que se muestra en la página "Nosotros"</p>
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                <Target className="w-4 h-4 inline mr-1" /> Misión
+              </label>
+              <textarea
+                value={form.nosotros_mission}
+                onChange={(e) => setForm(prev => ({ ...prev, nosotros_mission: e.target.value }))}
+                rows={4}
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                placeholder="Nuestra misión es..."
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                <Eye className="w-4 h-4 inline mr-1" /> Visión
+              </label>
+              <textarea
+                value={form.nosotros_vision}
+                onChange={(e) => setForm(prev => ({ ...prev, nosotros_vision: e.target.value }))}
+                rows={4}
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                placeholder="Nuestra visión es..."
+              />
+            </div>
+            <div className="text-xs text-slate-500 mt-2">
+              <p>💡 <strong>Valores:</strong> Los valores de la empresa se administran en <a href="/admin/valores" className="text-primary-600 hover:underline">Admin → Valores</a></p>
+              <p className="mt-1">💡 <strong>Equipo Directivo:</strong> Los miembros del equipo se administran en <a href="/admin/equipo" className="text-primary-600 hover:underline">Admin → Equipo</a></p>
             </div>
           </div>
         </div>

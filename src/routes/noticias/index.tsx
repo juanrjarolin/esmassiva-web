@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Calendar, User, Tag, ArrowRight, TrendingUp, BookOpen, Clock } from "lucide-react";
 import { NewsletterForm } from "~/components/NewsletterForm";
 import { SocialMediaModule } from "~/components/SocialMediaModule";
@@ -101,13 +101,14 @@ function NoticiasPage() {
                         </>
                       )}
                     </div>
-                    <a
-                      href={`/noticias/${featured.slug}`}
+                    <Link
+                      to="/noticias/$postSlug"
+                      params={{ postSlug: featured.slug }}
                       className="bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors flex items-center"
                     >
                       Leer más
                       <ArrowRight className="w-4 h-4 ml-2" />
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -176,13 +177,14 @@ function NoticiasPage() {
                           ))}
                         </div>
                       )}
-                      <a
-                        href={`/noticias/${post.slug}`}
+                      <Link
+                        to="/noticias/$postSlug"
+                        params={{ postSlug: post.slug }}
                         className="text-primary-600 font-semibold hover:text-primary-700 transition-colors flex items-center text-sm"
                       >
                         Leer más
                         <ArrowRight className="w-4 h-4 ml-1" />
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </article>

@@ -213,6 +213,7 @@ model JobPosition {
   description String   @db.Text
   requirements String  @db.Text
   benefits    String?  @db.Text
+  image       String?  // URL de la imagen de la vacante
 
   isActive    Boolean  @default(true)
 

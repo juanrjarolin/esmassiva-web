@@ -56,7 +56,9 @@ export function ImageUpload({
           formData.append("objectName", data.objectName);
           formData.append("bucketName", "company-assets");
 
-          const response = await fetch(data.uploadEndpoint || "/api/upload-image", {
+          // Use relative URL to ensure it works regardless of domain
+          const uploadUrl = data.uploadEndpoint || "/api/upload-image";
+          const response = await fetch(uploadUrl, {
             method: "POST",
             body: formData,
           });

@@ -89,16 +89,17 @@ export const requestImageUploadUrl = baseProcedure
       // Generate public URL for the uploaded image
       // Use our proxy endpoint instead of presigned URLs for permanent access
       // URL format: /api/images/bucket-name/object-path
-      const baseUrl = getBaseUrl();
       const basePath = env.BASE_PATH?.trim() || "";
       const apiBase = basePath ? `${basePath}/api/images` : "/api/images";
-      const publicUrl = `${baseUrl}${apiBase}/${bucketName}/${objectName}`;
+      // Use relative URL for publicUrl so it works regardless of domain
+      const publicUrl = `${apiBase}/${bucketName}/${objectName}`;
+      const uploadEndpoint = basePath ? `${basePath}/api/upload-image` : "/api/upload-image";
 
       return {
         success: true,
         objectName: objectName,
         publicUrl: publicUrl,
-        uploadEndpoint: basePath ? `${basePath}/api/upload-image` : "/api/upload-image",
+        uploadEndpoint: uploadEndpoint,
       };
     } catch (error) {
       if (error instanceof TRPCError) {

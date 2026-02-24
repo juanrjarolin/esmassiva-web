@@ -305,14 +305,14 @@ function ServiciosAdmin() {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-slate-200">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+            <div className="p-6 border-b border-slate-200 flex-shrink-0">
               <h2 className="text-xl font-bold text-slate-900">
                 {editingService ? "Editar Servicio" : "Nuevo Servicio"}
               </h2>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-6">
+            <form onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto flex-1">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -429,17 +429,21 @@ function ServiciosAdmin() {
                 </div>
               </div>
 
-              <div>
+              <div className="border-t border-slate-200 pt-6">
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Contenido completo (página individual)
+                  <span className="font-semibold">Contenido completo (página individual)</span>
+                  <span className="text-xs text-slate-500 ml-2">Este contenido se muestra cuando el usuario hace clic en "Conocer más"</span>
                 </label>
                 <textarea
-                  value={form.fullContent}
+                  value={form.fullContent || ""}
                   onChange={(e) => setForm(prev => ({ ...prev, fullContent: e.target.value }))}
-                  rows={6}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="Contenido HTML o Markdown para la página del servicio..."
+                  rows={12}
+                  className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 font-mono text-sm"
+                  placeholder="Contenido HTML o Markdown para la página del servicio...&#10;&#10;Ejemplo:&#10;&lt;h2&gt;Descripción del Servicio&lt;/h2&gt;&#10;&lt;p&gt;Aquí puedes agregar contenido detallado...&lt;/p&gt;"
                 />
+                <p className="text-xs text-slate-500 mt-2">
+                  Puedes usar HTML o Markdown. Este contenido aparecerá en la página individual del servicio.
+                </p>
               </div>
 
               <div className="flex items-center space-x-2">
@@ -455,7 +459,7 @@ function ServiciosAdmin() {
                 </label>
               </div>
 
-              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-200">
+              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-200 flex-shrink-0">
                 <button
                   type="button"
                   onClick={closeModal}

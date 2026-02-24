@@ -4,6 +4,7 @@ import { useTRPC } from "~/trpc/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Pencil, Trash2, Eye, EyeOff, MapPin, Clock, Briefcase } from "lucide-react";
 import toast from "react-hot-toast";
+import { ImageUpload } from "~/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/admin/empleos/")({
   component: EmpleosAdmin,
@@ -19,6 +20,7 @@ interface JobForm {
   description: string;
   requirements: string;
   benefits: string;
+  image: string;
   isActive: boolean;
 }
 
@@ -31,6 +33,7 @@ const emptyForm: JobForm = {
   description: "",
   requirements: "",
   benefits: "",
+  image: "",
   isActive: true,
 };
 
@@ -113,8 +116,13 @@ function EmpleosAdmin() {
   );
 
   const openModal = (item?: JobForm) => {
-    setEditingItem(item || null);
-    setForm(item || emptyForm);
+    if (item) {
+      setEditingItem(item);
+      setForm({ ...item, image: item.image || "" });
+    } else {
+      setEditingItem(null);
+      setForm(emptyForm);
+    }
     setIsModalOpen(true);
   };
 
@@ -255,6 +263,17 @@ function EmpleosAdmin() {
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Beneficios</label>
                 <textarea value={form.benefits} onChange={(e) => setForm(prev => ({ ...prev, benefits: e.target.value }))} rows={3} className="w-full px-3 py-2 border border-slate-300 rounded-xl" placeholder="Un beneficio por línea" />
+              </div>
+              <div>
+                <ImageUpload
+                  key={editingItem?.id || 'new'}
+                  value={form.image || ""}
+                  onChange={(url) => setForm(prev => ({ ...prev, image: url }))}
+                  label="Imagen de la Vacante"
+                  folder="jobs"
+                  previewClassName="h-32 w-full object-cover rounded-lg"
+                />
+                <p className="text-xs text-slate-500 mt-1">Imagen que se mostrará en la lista de vacantes y en la página individual</p>
               </div>
               <div className="flex items-center space-x-2">
                 <input type="checkbox" id="isActive" checked={form.isActive} onChange={(e) => setForm(prev => ({ ...prev, isActive: e.target.checked }))} className="w-4 h-4 rounded" />
