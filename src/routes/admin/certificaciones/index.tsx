@@ -79,8 +79,19 @@ function CertificacionesAdmin() {
   );
 
   const openModal = (item?: CertForm) => {
-    setEditingItem(item || null);
-    setForm(item || emptyForm);
+    if (item) {
+      // Normalizar valores null a strings vacíos
+      const normalizedItem = {
+        ...item,
+        description: item.description || "",
+        image: item.image || "",
+      };
+      setEditingItem(normalizedItem);
+      setForm(normalizedItem);
+    } else {
+      setEditingItem(null);
+      setForm(emptyForm);
+    }
     setIsModalOpen(true);
   };
 
@@ -92,10 +103,17 @@ function CertificacionesAdmin() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Normalizar valores: convertir null/undefined a string vacío o undefined según corresponda
+    const normalizedForm = {
+      ...form,
+      description: form.description || undefined,
+      image: form.image || undefined,
+    };
+
     if (editingItem?.id) {
-      updateMutation.mutate({ id: editingItem.id, data: form });
+      updateMutation.mutate({ id: editingItem.id, data: normalizedForm });
     } else {
-      createMutation.mutate(form);
+      createMutation.mutate(normalizedForm);
     }
   };
 

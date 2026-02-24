@@ -6,8 +6,8 @@ import { router } from "~/server/trpc/main";
 const certificationInput = z.object({
   name: z.string().min(1),
   icon: z.string().min(1),
-  description: z.string().optional(),
-  image: z.string().optional(),
+  description: z.string().nullable().optional().transform(val => val === null ? undefined : val),
+  image: z.string().nullable().optional().transform(val => val === null ? undefined : val),
   order: z.number().default(0),
   isActive: z.boolean().default(true),
 });
