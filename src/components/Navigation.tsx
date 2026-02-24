@@ -13,6 +13,7 @@ export function Navigation() {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const trpc = useTRPC();
   const { data: services = [] } = useQuery(trpc.content.getServices.queryOptions());
+  const { data: settings } = useQuery(trpc.content.getSiteSettings.queryOptions());
 
   // Build dropdown items from database services
   const serviceDropdownItems = services
@@ -65,13 +66,21 @@ export function Navigation() {
             {/* Logo */}
             <div className="flex-shrink-0">
               <a href="/" className="flex items-center">
-                <img
-                  src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjREU3ODM1IiBmaWxsLW9wYWNpdHk9IjAuMSIgcng9IjEwIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1zaXplPSI0MCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiNERTc4MzUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5FPC90ZXh0Pgo8L3N2Zz4="
-                  alt="Esmassiva"
-                  className="h-12 mr-3"
-                />
+                {settings?.logoNavbar ? (
+                  <img
+                    src={settings.logoNavbar}
+                    alt={settings.siteName || "Esmassiva"}
+                    className="h-12 mr-3"
+                  />
+                ) : (
+                  <img
+                    src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjREU3ODM1IiBmaWxsLW9wYWNpdHk9IjAuMSIgcng9IjEwIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1zaXplPSI0MCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiNERTc4MzUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5FPC90ZXh0Pgo8L3N2Zz4="
+                    alt="Esmassiva"
+                    className="h-12 mr-3"
+                  />
+                )}
                 <div>
-                  <div className="text-2xl font-bold text-secondary-900">Esmassiva</div>
+                  <div className="text-2xl font-bold text-secondary-900">{settings?.siteName || "Esmassiva"}</div>
                   <div className="text-xs text-secondary-500 -mt-1">Contact Center & BPO</div>
                 </div>
               </a>

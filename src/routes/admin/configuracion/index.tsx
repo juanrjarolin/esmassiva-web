@@ -4,6 +4,7 @@ import { useTRPC } from "~/trpc/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Save, Globe, Mail, Phone, MapPin, Facebook, Instagram, Linkedin, Twitter, Home, Users } from "lucide-react";
 import toast from "react-hot-toast";
+import { ImageUpload } from "~/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/admin/configuracion/")({
   component: ConfiguracionAdmin,
@@ -18,6 +19,8 @@ function ConfiguracionAdmin() {
   const [form, setForm] = useState({
     siteName: "",
     siteDescription: "",
+    logoNavbar: "",
+    logoFooter: "",
     contactEmail: "",
     contactPhone: "",
     contactPhoneDescription: "",
@@ -77,6 +80,8 @@ function ConfiguracionAdmin() {
       setForm({
         siteName: settings.siteName || "Esmassiva",
         siteDescription: settings.siteDescription || "",
+        logoNavbar: settings.logoNavbar || "",
+        logoFooter: settings.logoFooter || "",
         contactEmail: settings.contactEmail || "",
         contactPhone: settings.contactPhone || "",
         contactPhoneDescription: settings.contactPhoneDescription || "",
@@ -177,6 +182,26 @@ function ConfiguracionAdmin() {
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-slate-700 mb-1">Descripción del Sitio (SEO)</label>
               <textarea value={form.siteDescription} onChange={(e) => setForm(prev => ({ ...prev, siteDescription: e.target.value }))} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+            </div>
+            <div>
+              <ImageUpload
+                value={form.logoNavbar || ""}
+                onChange={(url) => setForm(prev => ({ ...prev, logoNavbar: url }))}
+                label="Logo del Navbar"
+                folder="logos"
+                previewClassName="h-16 w-auto object-contain"
+              />
+              <p className="text-xs text-slate-500 mt-1">Logo que aparece en la barra de navegación superior</p>
+            </div>
+            <div>
+              <ImageUpload
+                value={form.logoFooter || ""}
+                onChange={(url) => setForm(prev => ({ ...prev, logoFooter: url }))}
+                label="Logo del Footer"
+                folder="logos"
+                previewClassName="h-16 w-auto object-contain"
+              />
+              <p className="text-xs text-slate-500 mt-1">Logo que aparece en el pie de página</p>
             </div>
           </div>
         </div>

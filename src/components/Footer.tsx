@@ -6,6 +6,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
   const trpc = useTRPC();
   const { data: services = [] } = useQuery(trpc.content.getServices.queryOptions());
+  const { data: settings } = useQuery(trpc.content.getSiteSettings.queryOptions());
 
   // Build services list from database
   const servicesList = services
@@ -38,13 +39,21 @@ export function Footer() {
           {/* Company Info */}
           <div className="lg:col-span-1">
             <div className="flex items-center mb-6">
-              <img
-                src="/logo-esmassiva.png"
-                alt="Esmassiva"
-                className="h-12 mr-3"
-              />
+              {settings?.logoFooter ? (
+                <img
+                  src={settings.logoFooter}
+                  alt={settings.siteName || "Esmassiva"}
+                  className="h-12 mr-3"
+                />
+              ) : (
+                <img
+                  src="/logo-esmassiva.png"
+                  alt="Esmassiva"
+                  className="h-12 mr-3"
+                />
+              )}
               <div>
-                <div className="text-2xl font-bold">Esmassiva</div>
+                <div className="text-2xl font-bold">{settings?.siteName || "Esmassiva"}</div>
                 <div className="text-secondary-400 text-sm">Contact Center & BPO</div>
               </div>
             </div>
