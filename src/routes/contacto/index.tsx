@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTRPC } from "~/trpc/react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 export const Route = createFileRoute("/contacto/")({
@@ -28,7 +28,11 @@ type ContactFormData = z.infer<typeof contactFormSchema>;
 
 function ContactoPage() {
   const trpc = useTRPC();
-  
+
+  const { data: settings } = useQuery(trpc.content.getSiteSettings.queryOptions());
+  const { data: offices } = useQuery(trpc.content.getOffices.queryOptions());
+  const { data: hero } = useQuery(trpc.content.getHero.queryOptions({ page: "contacto" }));
+
   const contactMutation = useMutation(
     trpc.createContactRequest.mutationOptions({
       onSuccess: (data) => {
@@ -54,38 +58,35 @@ function ContactoPage() {
     contactMutation.mutate(data);
   };
 
-  const offices = [
-    {
-      city: "Asunción",
-      address: "Sgto. Penayo 165, San Lorenzo 111426, Paraguay",
-      phone: "+595 21 123 4567",
-      email: "asuncion@esmassiva.com",
-      hours: "Lun - Vie: 8:00 AM - 8:00 PM",
-      mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3606.2!2d-57.5089!3d-25.3336!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x945da7b5b5b5b5b5%3A0x1!2sSgto.%20Penayo%20165%2C%20San%20Lorenzo%20111426!5e0!3m2!1sen!2spy!4v1234567890"
-    }
-  ];
+  // Obtener valores de configuración con valores por defecto
+  const contactPhone = settings?.contactPhone || "+52 800 123 4567";
+  const contactEmail = settings?.contactEmail || "contacto@esmassiva.com";
+  const contactPhoneFormatted = contactPhone.replace(/\s/g, "");
+  const contactPhoneTel = contactPhoneFormatted.startsWith("+")
+    ? `tel:${contactPhoneFormatted}`
+    : `tel:+${contactPhoneFormatted}`;
 
   const contactMethods = [
     {
       icon: Phone,
       title: "Llámanos",
-      description: "Habla directamente con nuestros especialistas",
-      value: "+52 800 123 4567",
-      action: "tel:+528001234567"
+      description: settings?.contactPhoneDescription || "Habla directamente con nuestros especialistas",
+      value: contactPhone,
+      action: contactPhoneTel
     },
     {
       icon: Mail,
       title: "Envíanos un email",
-      description: "Respuesta en menos de 24 horas",
-      value: "contacto@esmassiva.com",
-      action: "mailto:contacto@esmassiva.com"
+      description: settings?.contactEmailDescription || "Respuesta en menos de 24 horas",
+      value: contactEmail,
+      action: `mailto:${contactEmail}`
     },
     {
       icon: MessageSquare,
-      title: "Chat en vivo",
-      description: "Soporte instantáneo en línea",
-      value: "Iniciar chat",
-      action: "#"
+      title: settings?.contactChatTitle || "Chat en vivo",
+      description: settings?.contactChatDescription || "Soporte instantáneo en línea",
+      value: settings?.contactChatValue || "Iniciar chat",
+      action: settings?.contactChatAction || "#"
     }
   ];
 
@@ -105,11 +106,10 @@ function ContactoPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-6xl font-bold text-secondary-900 mb-6">
-              Hablemos de tu <span className="text-primary-600">proyecto</span>
+              {hero?.title || "Hablemos de tu"} <span className="text-primary-600">{hero?.titleHighlight || "proyecto"}</span>
             </h1>
             <p className="text-xl text-secondary-600 max-w-3xl mx-auto leading-relaxed">
-              Nuestro equipo de especialistas está listo para ayudarte a transformar 
-              tu contact center y procesos de negocio. Agenda una consulta gratuita.
+              {hero?.subtitle || "Nuestro equipo de especialistas está listo para ayudarte a transformar tu contact center y procesos de negocio. Agenda una consulta gratuita."}
             </p>
           </div>
         </div>
@@ -389,63 +389,73 @@ function ContactoPage() {
       </section>
 
       {/* Office Locations */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-4">
-              Nuestra Oficina
-            </h2>
-            <p className="text-xl text-secondary-600 max-w-2xl mx-auto">
-              Ubicados en el corazón de Paraguay para brindar el mejor servicio
-            </p>
-          </div>
+      {offices && offices.length > 0 && (
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-4">
+                {settings?.contactOfficesTitle || "Nuestras Oficinas"}
+              </h2>
+              <p className="text-xl text-secondary-600 max-w-2xl mx-auto">
+                {settings?.contactOfficesSubtitle || "Ubicados estratégicamente para brindar el mejor servicio"}
+              </p>
+            </div>
 
-          <div className="flex justify-center">
-            <div className="max-w-md">
-              {offices.map((office, index) => (
-                <div key={index} className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                  <div className="h-48">
-                    <iframe
-                      src={office.mapUrl}
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0 }}
-                      allowFullScreen
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                    />
-                  </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {offices.map((office) => (
+                <div key={office.id} className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                  {office.mapUrl && (
+                    <div className="h-48">
+                      <iframe
+                        src={office.mapUrl}
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        allowFullScreen
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                      />
+                    </div>
+                  )}
                   <div className="p-6">
                     <h3 className="text-xl font-bold text-secondary-900 mb-4">{office.city}</h3>
                     <div className="space-y-3">
-                      <div className="flex items-start">
-                        <MapPin className="w-5 h-5 text-primary-600 mr-3 mt-1 flex-shrink-0" />
-                        <p className="text-secondary-600">{office.address}</p>
-                      </div>
-                      <div className="flex items-center">
-                        <Phone className="w-5 h-5 text-primary-600 mr-3 flex-shrink-0" />
-                        <a href={`tel:${office.phone}`} className="text-secondary-600 hover:text-primary-600 transition-colors">
-                          {office.phone}
-                        </a>
-                      </div>
-                      <div className="flex items-center">
-                        <Mail className="w-5 h-5 text-primary-600 mr-3 flex-shrink-0" />
-                        <a href={`mailto:${office.email}`} className="text-secondary-600 hover:text-primary-600 transition-colors">
-                          {office.email}
-                        </a>
-                      </div>
-                      <div className="flex items-center">
-                        <Clock className="w-5 h-5 text-primary-600 mr-3 flex-shrink-0" />
-                        <p className="text-secondary-600">{office.hours}</p>
-                      </div>
+                      {office.address && (
+                        <div className="flex items-start">
+                          <MapPin className="w-5 h-5 text-primary-600 mr-3 mt-1 flex-shrink-0" />
+                          <p className="text-secondary-600">{office.address}</p>
+                        </div>
+                      )}
+                      {office.phone && (
+                        <div className="flex items-center">
+                          <Phone className="w-5 h-5 text-primary-600 mr-3 flex-shrink-0" />
+                          <a href={`tel:${office.phone.replace(/\s/g, "")}`} className="text-secondary-600 hover:text-primary-600 transition-colors">
+                            {office.phone}
+                          </a>
+                        </div>
+                      )}
+                      {office.email && (
+                        <div className="flex items-center">
+                          <Mail className="w-5 h-5 text-primary-600 mr-3 flex-shrink-0" />
+                          <a href={`mailto:${office.email}`} className="text-secondary-600 hover:text-primary-600 transition-colors">
+                            {office.email}
+                          </a>
+                        </div>
+                      )}
+                      {office.hours && (
+                        <div className="flex items-center">
+                          <Clock className="w-5 h-5 text-primary-600 mr-3 flex-shrink-0" />
+                          <p className="text-secondary-600">{office.hours}</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }

@@ -78,6 +78,14 @@ export const publicContentRouter = router({
     });
   }),
 
+  // Get all active values
+  getValues: baseProcedure.query(async () => {
+    return db.value.findMany({
+      where: { isActive: true },
+      orderBy: { order: "asc" },
+    });
+  }),
+
   // Get hero section by page
   getHero: baseProcedure
     .input(z.object({ page: z.string() }))
@@ -119,7 +127,7 @@ export const publicContentRouter = router({
       featured: z.boolean().optional(),
     }))
     .query(async ({ input }) => {
-      return db.blogPost.findMany({
+      const posts = await db.blogPost.findMany({
         where: {
           isPublished: true,
           ...(input.featured ? { isFeatured: true } : {}),
@@ -127,15 +135,24 @@ export const publicContentRouter = router({
         orderBy: { publishedAt: "desc" },
         take: input.limit,
       });
+      return posts.map(post => ({
+        ...post,
+        tags: post.tags ? JSON.parse(post.tags) : [],
+      }));
     }),
 
   // Get blog post by slug
   getBlogPostBySlug: baseProcedure
     .input(z.object({ slug: z.string() }))
     .query(async ({ input }) => {
-      return db.blogPost.findUnique({
+      const post = await db.blogPost.findUnique({
         where: { slug: input.slug, isPublished: true },
       });
+      if (!post) return null;
+      return {
+        ...post,
+        tags: post.tags ? JSON.parse(post.tags) : [],
+      };
     }),
 
   // Get site settings

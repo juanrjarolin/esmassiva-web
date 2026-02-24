@@ -1,11 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowRight, Phone, ShoppingCart, Headphones, CreditCard, Building2, TrendingUp } from "lucide-react";
+import { useTRPC } from "~/trpc/react";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/servicios/")({
   component: ServiciosPage,
 });
 
 function ServiciosPage() {
+  const trpc = useTRPC();
+  const { data: settings } = useQuery(trpc.content.getSiteSettings.queryOptions());
+
+  // Función helper para obtener texto con fallback
+  const t = (key: string, fallback: string) => (settings?.[key] && settings[key].trim() !== "" ? settings[key] : fallback);
   const services = [
     {
       id: 'ventas-telemarketing',
@@ -67,7 +74,7 @@ function ServiciosPage() {
               Nuestros <span className="text-primary-600">Servicios</span>
             </h1>
             <p className="text-xl text-secondary-600 max-w-3xl mx-auto leading-relaxed">
-              Soluciones integrales de contact center y BPO diseñadas para impulsar el crecimiento 
+              Soluciones integrales de contact center y BPO diseñadas para impulsar el crecimiento
               de tu empresa con tecnología de vanguardia y talento especializado.
             </p>
           </div>
@@ -94,19 +101,19 @@ function ServiciosPage() {
                       </div>
                       <ArrowRight className="w-6 h-6 text-secondary-400 group-hover:text-primary-600 group-hover:translate-x-1 group-hover:scale-110 transition-all duration-200" />
                     </div>
-                    
+
                     <h3 className="text-2xl font-bold text-secondary-900 mb-4 group-hover:text-primary-600 transition-colors duration-300">
                       {service.title}
                     </h3>
-                    
+
                     <p className="text-secondary-600 mb-6 leading-relaxed transition-colors duration-300 group-hover:text-secondary-700">
                       {service.description}
                     </p>
-                    
+
                     <ul className="space-y-2 mb-8">
                       {service.features.map((feature, index) => (
-                        <li 
-                          key={index} 
+                        <li
+                          key={index}
                           className="flex items-center text-sm text-secondary-600 opacity-90 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300"
                           style={{ transitionDelay: `${index * 50}ms` }}
                         >
@@ -115,12 +122,12 @@ function ServiciosPage() {
                         </li>
                       ))}
                     </ul>
-                    
+
                     <a
                       href={service.href}
                       className="w-full bg-primary-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-primary-700 hover:scale-[1.02] transition-all duration-200 group-hover:shadow-lg block text-center"
                     >
-                      Conocer más
+                      {t("services_cta", "Conocer más")}
                     </a>
                   </div>
                 </div>
@@ -137,7 +144,7 @@ function ServiciosPage() {
             ¿Listo para transformar tu negocio?
           </h2>
           <p className="text-xl text-primary-100 mb-8 leading-relaxed">
-            Descubre cómo nuestras soluciones pueden optimizar tus procesos y 
+            Descubre cómo nuestras soluciones pueden optimizar tus procesos y
             mejorar la experiencia de tus clientes.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

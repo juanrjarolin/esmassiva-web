@@ -6,6 +6,7 @@ export { clientsRouter } from "./clients";
 export { certificationsRouter } from "./certifications";
 export { officesRouter } from "./offices";
 export { benefitsRouter } from "./benefits";
+export { valuesRouter } from "./values";
 export { heroSectionsRouter } from "./heroSections";
 export { teamMembersRouter } from "./teamMembers";
 export { jobPositionsRouter } from "./jobPositions";

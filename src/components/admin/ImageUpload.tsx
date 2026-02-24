@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Upload, X, Loader2 } from "lucide-react";
 import { useTRPC } from "~/trpc/react";
 import { useMutation } from "@tanstack/react-query";
@@ -28,6 +28,19 @@ export function ImageUpload({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const trpc = useTRPC();
+
+  // Sincronizar preview con value cuando cambia desde el padre
+  // Solo actualizar si no estamos en proceso de subida y el valor realmente cambió
+  useEffect(() => {
+    if (!isUploading && value !== preview) {
+      setPreview(value || null);
+      // Limpiar el input file si el valor cambió desde fuera
+      if (fileInputRef.current && !value) {
+        fileInputRef.current.value = "";
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
 
   const uploadMutation = useMutation(
     trpc.requestImageUploadUrl.mutationOptions({

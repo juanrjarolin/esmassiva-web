@@ -161,6 +161,7 @@ function ClientesAdmin() {
                 <input type="text" value={form.name} onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl" required />
               </div>
               <ImageUpload
+                key={editingItem?.id || 'new'}
                 value={form.logo}
                 onChange={(url) => setForm(prev => ({ ...prev, logo: url }))}
                 label="Logo"

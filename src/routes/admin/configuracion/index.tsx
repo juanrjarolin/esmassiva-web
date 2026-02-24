@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useTRPC } from "~/trpc/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Save, Globe, Mail, Phone, MapPin, Facebook, Instagram, Linkedin, Twitter, Home } from "lucide-react";
+import { Save, Globe, Mail, Phone, MapPin, Facebook, Instagram, Linkedin, Twitter, Home, Users } from "lucide-react";
 import toast from "react-hot-toast";
 
 export const Route = createFileRoute("/admin/configuracion/")({
@@ -20,7 +20,18 @@ function ConfiguracionAdmin() {
     siteDescription: "",
     contactEmail: "",
     contactPhone: "",
+    contactPhoneDescription: "",
+    contactEmailDescription: "",
+    contactChatTitle: "",
+    contactChatDescription: "",
+    contactChatValue: "",
+    contactChatAction: "",
+    contactOfficesTitle: "",
+    contactOfficesSubtitle: "",
     address: "",
+    // Nosotros
+    nosotros_mission: "",
+    nosotros_vision: "",
     facebook: "",
     instagram: "",
     linkedin: "",
@@ -39,6 +50,7 @@ function ConfiguracionAdmin() {
     home_services_cta: "",
     home_services_btn: "",
     home_services_btn_link: "",
+    services_cta: "",
     home_benefits_title: "",
     home_benefits_subtitle: "",
     home_testimonials_title: "",
@@ -67,7 +79,17 @@ function ConfiguracionAdmin() {
         siteDescription: settings.siteDescription || "",
         contactEmail: settings.contactEmail || "",
         contactPhone: settings.contactPhone || "",
+        contactPhoneDescription: settings.contactPhoneDescription || "",
+        contactEmailDescription: settings.contactEmailDescription || "",
+        contactChatTitle: settings.contactChatTitle || "",
+        contactChatDescription: settings.contactChatDescription || "",
+        contactChatValue: settings.contactChatValue || "",
+        contactChatAction: settings.contactChatAction || "",
+        contactOfficesTitle: settings.contactOfficesTitle || "",
+        contactOfficesSubtitle: settings.contactOfficesSubtitle || "",
         address: settings.address || "",
+        nosotros_mission: settings.nosotros_mission || "",
+        nosotros_vision: settings.nosotros_vision || "",
         facebook: settings.facebook || "",
         instagram: settings.instagram || "",
         linkedin: settings.linkedin || "",
@@ -85,6 +107,7 @@ function ConfiguracionAdmin() {
         home_services_cta: settings.home_services_cta || "Conocer más",
         home_services_btn: settings.home_services_btn || "Ver Todos los Servicios",
         home_services_btn_link: settings.home_services_btn_link || "/servicios",
+        services_cta: settings.services_cta || "Conocer más",
         home_benefits_title: settings.home_benefits_title || "¿Por qué elegir Esmassiva?",
         home_benefits_subtitle: settings.home_benefits_subtitle || "Ventajas competitivas que nos posicionan como líderes en la industria",
         home_testimonials_title: settings.home_testimonials_title || "Lo que dicen nuestros clientes",
@@ -179,6 +202,54 @@ function ConfiguracionAdmin() {
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-slate-700 mb-1">
+                Descripción del Teléfono (ej. Habla directamente con nuestros especialistas)
+              </label>
+              <input type="text" value={form.contactPhoneDescription} onChange={(e) => setForm(prev => ({ ...prev, contactPhoneDescription: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Descripción del Email (ej. Respuesta en menos de 24 horas)
+              </label>
+              <input type="text" value={form.contactEmailDescription} onChange={(e) => setForm(prev => ({ ...prev, contactEmailDescription: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Título del Chat (ej. Chat en vivo)
+              </label>
+              <input type="text" value={form.contactChatTitle} onChange={(e) => setForm(prev => ({ ...prev, contactChatTitle: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Valor del Chat (ej. Iniciar chat)
+              </label>
+              <input type="text" value={form.contactChatValue} onChange={(e) => setForm(prev => ({ ...prev, contactChatValue: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Descripción del Chat (ej. Soporte instantáneo en línea)
+              </label>
+              <input type="text" value={form.contactChatDescription} onChange={(e) => setForm(prev => ({ ...prev, contactChatDescription: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Acción del Chat (URL o #)
+              </label>
+              <input type="text" value={form.contactChatAction} onChange={(e) => setForm(prev => ({ ...prev, contactChatAction: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl" placeholder="#" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Título Sección Oficinas (ej. Nuestras Oficinas)
+              </label>
+              <input type="text" value={form.contactOfficesTitle} onChange={(e) => setForm(prev => ({ ...prev, contactOfficesTitle: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Subtítulo Sección Oficinas
+              </label>
+              <input type="text" value={form.contactOfficesSubtitle} onChange={(e) => setForm(prev => ({ ...prev, contactOfficesSubtitle: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 <MapPin className="w-4 h-4 inline mr-1" /> Dirección
               </label>
               <input type="text" value={form.address} onChange={(e) => setForm(prev => ({ ...prev, address: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl" />
@@ -258,16 +329,20 @@ function ConfiguracionAdmin() {
               <textarea value={form.home_services_subtitle} onChange={(e) => setForm(prev => ({ ...prev, home_services_subtitle: e.target.value }))} rows={2} className="w-full px-3 py-2 border border-slate-300 rounded-xl" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Servicios - Texto enlace (Conocer más)</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Servicios (Home) - Texto enlace (Conocer más)</label>
               <input type="text" value={form.home_services_cta} onChange={(e) => setForm(prev => ({ ...prev, home_services_cta: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Servicios - Botón (Ver todos)</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Servicios (Home) - Botón (Ver todos)</label>
               <input type="text" value={form.home_services_btn} onChange={(e) => setForm(prev => ({ ...prev, home_services_btn: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Servicios - URL botón</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Servicios (Home) - URL botón</label>
               <input type="text" value={form.home_services_btn_link} onChange={(e) => setForm(prev => ({ ...prev, home_services_btn_link: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl" placeholder="/servicios" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Página Servicios - Texto botón (Conocer más)</label>
+              <input type="text" value={form.services_cta} onChange={(e) => setForm(prev => ({ ...prev, services_cta: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl" placeholder="Conocer más" />
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-slate-700 mb-1">Beneficios - Título</label>

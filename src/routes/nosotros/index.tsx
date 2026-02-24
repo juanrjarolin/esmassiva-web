@@ -1,60 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Users, Target, Eye, Heart, Award, TrendingUp, Globe, Shield } from "lucide-react";
+import { Users, Target, Eye, Heart, Award, TrendingUp, Globe, Shield, CheckCircle, Star, Zap } from "lucide-react";
+import { useTRPC } from "~/trpc/react";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/nosotros/")({
   component: NosotrosPage,
 });
 
-function NosotrosPage() {
-  const values = [
-    {
-      icon: Shield,
-      title: "Confiabilidad",
-      description: "Garantizamos la máxima seguridad y confidencialidad en todos nuestros procesos."
-    },
-    {
-      icon: TrendingUp,
-      title: "Excelencia",
-      description: "Buscamos continuamente la mejora y la innovación en cada servicio que ofrecemos."
-    },
-    {
-      icon: Users,
-      title: "Colaboración",
-      description: "Trabajamos como una extensión de tu equipo para lograr objetivos comunes."
-    },
-    {
-      icon: Globe,
-      title: "Alcance Global",
-      description: "Conectamos mercados hispanohablantes con soluciones tecnológicas avanzadas."
-    }
-  ];
+// Icon mapping
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  Globe, Shield, TrendingUp, Award, Users, CheckCircle, Star, Zap, Target, Heart
+};
 
-  const leadership = [
-    {
-      name: "María Elena Rodríguez",
-      position: "CEO & Fundadora",
-      experience: "15+ años en BPO",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
-    },
-    {
-      name: "Carlos Mendoza",
-      position: "CTO",
-      experience: "12+ años en tecnología",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
-    },
-    {
-      name: "Ana Sofía Herrera",
-      position: "Directora de Operaciones",
-      experience: "10+ años en contact center",
-      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=761&q=80"
-    },
-    {
-      name: "Roberto Silva",
-      position: "Director Comercial",
-      experience: "8+ años en ventas B2B",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
-    }
-  ];
+function NosotrosPage() {
+  const trpc = useTRPC();
+  const { data: settings } = useQuery(trpc.content.getSiteSettings.queryOptions());
+  const { data: values } = useQuery(trpc.content.getValues.queryOptions());
+  const { data: teamMembers } = useQuery(trpc.content.getTeamMembers.queryOptions());
 
   const stats = [
     { number: "15+", label: "Años de experiencia" },
@@ -74,7 +36,7 @@ function NosotrosPage() {
                 Transformando el <span className="text-primary-600">futuro</span> de los contact centers
               </h1>
               <p className="text-xl text-secondary-600 mb-8 leading-relaxed">
-                Desde 2008, Esmassiva ha sido pionera en brindar soluciones innovadoras de 
+                Desde 2008, Esmassiva ha sido pionera en brindar soluciones innovadoras de
                 contact center y BPO para empresas líderes en el mercado hispanohablante.
               </p>
               <div className="grid grid-cols-2 gap-6">
@@ -119,10 +81,7 @@ function NosotrosPage() {
                 <h2 className="text-2xl font-bold text-secondary-900">Nuestra Misión</h2>
               </div>
               <p className="text-secondary-700 leading-relaxed">
-                Empoderar a las empresas con soluciones integrales de contact center y BPO, 
-                combinando tecnología de vanguardia con talento humano especializado para 
-                crear experiencias excepcionales que impulsen el crecimiento y la satisfacción 
-                del cliente en el mercado hispanohablante.
+                {settings?.nosotros_mission || "Empoderar a las empresas con soluciones integrales de contact center y BPO, combinando tecnología de vanguardia con talento humano especializado para crear experiencias excepcionales que impulsen el crecimiento y la satisfacción del cliente en el mercado hispanohablante."}
               </p>
             </div>
 
@@ -134,9 +93,7 @@ function NosotrosPage() {
                 <h2 className="text-2xl font-bold text-secondary-900">Nuestra Visión</h2>
               </div>
               <p className="text-secondary-700 leading-relaxed">
-                Ser la empresa líder en servicios de contact center y BPO en Latinoamérica, 
-                reconocida por nuestra innovación, excelencia operativa y capacidad de 
-                transformar digitalmente los procesos de negocio de nuestros clientes.
+                {settings?.nosotros_vision || "Ser la empresa líder en servicios de contact center y BPO en Latinoamérica, reconocida por nuestra innovación, excelencia operativa y capacidad de transformar digitalmente los procesos de negocio de nuestros clientes."}
               </p>
             </div>
           </div>
@@ -156,18 +113,24 @@ function NosotrosPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, index) => {
-              const Icon = value.icon;
-              return (
-                <div key={index} className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
-                  <div className="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center mb-6">
-                    <Icon className="w-8 h-8 text-primary-600" />
+            {values && values.length > 0 ? (
+              values.map((value) => {
+                const Icon = iconMap[value.icon] || Shield;
+                return (
+                  <div key={value.id} className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
+                    <div className="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center mb-6">
+                      <Icon className="w-8 h-8 text-primary-600" />
+                    </div>
+                    <h3 className="text-xl font-bold text-secondary-900 mb-4">{value.title}</h3>
+                    <p className="text-secondary-600 leading-relaxed">{value.description}</p>
                   </div>
-                  <h3 className="text-xl font-bold text-secondary-900 mb-4">{value.title}</h3>
-                  <p className="text-secondary-600 leading-relaxed">{value.description}</p>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              <div className="col-span-full text-center text-slate-500 py-8">
+                No hay valores configurados. Configúralos desde el panel de administración.
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -185,22 +148,36 @@ function NosotrosPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {leadership.map((leader, index) => (
-              <div key={index} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="aspect-square overflow-hidden">
-                  <img
-                    src={leader.image}
-                    alt={leader.name}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                  />
+            {teamMembers && teamMembers.length > 0 ? (
+              teamMembers.map((member) => (
+                <div key={member.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                  <div className="aspect-square overflow-hidden">
+                    {member.image ? (
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-primary-100 flex items-center justify-center">
+                        <Users className="w-16 h-16 text-primary-600" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-secondary-900 mb-2">{member.name}</h3>
+                    <p className="text-primary-600 font-semibold mb-2">{member.position}</p>
+                    {member.bio && (
+                      <p className="text-sm text-secondary-600 line-clamp-2">{member.bio}</p>
+                    )}
+                  </div>
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-secondary-900 mb-2">{leader.name}</h3>
-                  <p className="text-primary-600 font-semibold mb-2">{leader.position}</p>
-                  <p className="text-sm text-secondary-600">{leader.experience}</p>
-                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center text-slate-500 py-8">
+                No hay miembros del equipo configurados. Agrégalos desde el panel de administración.
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>

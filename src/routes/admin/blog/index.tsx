@@ -63,7 +63,11 @@ function BlogAdmin() {
     trpc.blogPosts.create.mutationOptions({
       onSuccess: (data) => {
         queryClient.invalidateQueries(trpc.blogPosts.list.queryOptions());
-        queryClient.invalidateQueries(trpc.content.getBlogPosts.queryOptions({ limit: 10 }));
+        // Invalidate all blog post queries
+        queryClient.invalidateQueries({
+          queryKey: ["trpc", "content", "getBlogPosts"],
+          exact: false,
+        });
         queryClient.invalidateQueries(trpc.content.getHomepageData.queryOptions());
         if (data?.slug) {
           queryClient.invalidateQueries(trpc.content.getBlogPostBySlug.queryOptions({ slug: data.slug }));
@@ -85,7 +89,11 @@ function BlogAdmin() {
     trpc.blogPosts.update.mutationOptions({
       onSuccess: (data) => {
         queryClient.invalidateQueries(trpc.blogPosts.list.queryOptions());
-        queryClient.invalidateQueries(trpc.content.getBlogPosts.queryOptions({ limit: 10 }));
+        // Invalidate all blog post queries
+        queryClient.invalidateQueries({
+          queryKey: ["trpc", "content", "getBlogPosts"],
+          exact: false,
+        });
         queryClient.invalidateQueries(trpc.content.getHomepageData.queryOptions());
         if (data?.slug) {
           queryClient.invalidateQueries(trpc.content.getBlogPostBySlug.queryOptions({ slug: data.slug }));
@@ -107,7 +115,11 @@ function BlogAdmin() {
     trpc.blogPosts.delete.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries(trpc.blogPosts.list.queryOptions());
-        queryClient.invalidateQueries(trpc.content.getBlogPosts.queryOptions({ limit: 10 }));
+        // Invalidate all blog post queries
+        queryClient.invalidateQueries({
+          queryKey: ["trpc", "content", "getBlogPosts"],
+          exact: false,
+        });
         queryClient.invalidateQueries(trpc.content.getHomepageData.queryOptions());
         queryClient.invalidateQueries({
           queryKey: ["trpc", "content", "getBlogPostBySlug"],
@@ -125,7 +137,12 @@ function BlogAdmin() {
     trpc.blogPosts.togglePublished.mutationOptions({
       onSuccess: (data) => {
         queryClient.invalidateQueries(trpc.blogPosts.list.queryOptions());
-        queryClient.invalidateQueries(trpc.content.getBlogPosts.queryOptions({ limit: 10 }));
+        // Invalidate all blog post queries
+        queryClient.invalidateQueries({
+          queryKey: ["trpc", "content", "getBlogPosts"],
+          exact: false,
+        });
+        queryClient.invalidateQueries(trpc.content.getHomepageData.queryOptions());
         if (data?.slug) {
           queryClient.invalidateQueries(trpc.content.getBlogPostBySlug.queryOptions({ slug: data.slug }));
         }

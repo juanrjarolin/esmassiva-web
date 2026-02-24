@@ -285,7 +285,13 @@ function Home() {
                 const Icon = iconMap[cert.icon] || Shield;
                 return (
                   <div key={cert.name} className="flex flex-col items-center bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
-                    <Icon className="w-12 h-12 text-primary-600 mb-2" />
+                    <div className="h-16 flex items-center justify-center mb-2">
+                      {cert.image ? (
+                        <img src={cert.image} alt={cert.name} className="h-16 w-auto object-contain" />
+                      ) : (
+                        <Icon className="w-12 h-12 text-primary-600" />
+                      )}
+                    </div>
                     <span className="text-lg font-bold text-secondary-900 text-center">{cert.name}</span>
                   </div>
                 );

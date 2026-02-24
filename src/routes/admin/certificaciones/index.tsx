@@ -4,6 +4,7 @@ import { useTRPC } from "~/trpc/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Pencil, Trash2, Eye, EyeOff, Shield, Award } from "lucide-react";
 import toast from "react-hot-toast";
+import { ImageUpload } from "~/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/admin/certificaciones/")({
   component: CertificacionesAdmin,
@@ -16,6 +17,7 @@ interface CertForm {
   name: string;
   icon: string;
   description: string;
+  image?: string;
   order: number;
   isActive: boolean;
 }
@@ -24,6 +26,7 @@ const emptyForm: CertForm = {
   name: "",
   icon: "Shield",
   description: "",
+  image: "",
   order: 0,
   isActive: true,
 };
@@ -119,7 +122,13 @@ function CertificacionesAdmin() {
             const Icon = item.icon === "Award" ? Award : Shield;
             return (
               <div key={item.id} className="bg-white rounded-2xl p-6 shadow-sm text-center">
-                <Icon className="w-12 h-12 text-primary-600 mx-auto mb-3" />
+                <div className="h-16 flex items-center justify-center mb-3">
+                  {item.image ? (
+                    <img src={item.image} alt={item.name} className="h-16 w-auto object-contain" />
+                  ) : (
+                    <Icon className="w-12 h-12 text-primary-600" />
+                  )}
+                </div>
                 <h3 className="font-bold text-slate-900 mb-1">{item.name}</h3>
                 {item.description && <p className="text-xs text-slate-500 mb-3">{item.description}</p>}
                 <div className="flex items-center justify-center space-x-2">
@@ -152,8 +161,16 @@ function CertificacionesAdmin() {
                 <label className="block text-sm font-medium text-slate-700 mb-1">Nombre *</label>
                 <input type="text" value={form.name} onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl" placeholder="Ej: ISO 27001" required />
               </div>
+              <ImageUpload
+                key={editingItem?.id || 'new'}
+                value={form.image || ""}
+                onChange={(url) => setForm(prev => ({ ...prev, image: url }))}
+                label="Foto del Premio/Certificado"
+                folder="certifications"
+                previewClassName="h-32 w-auto object-contain"
+              />
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Icono</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Icono (se usa si no hay imagen)</label>
                 <select value={form.icon} onChange={(e) => setForm(prev => ({ ...prev, icon: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl">
                   {iconOptions.map((icon) => (
                     <option key={icon} value={icon}>{icon}</option>

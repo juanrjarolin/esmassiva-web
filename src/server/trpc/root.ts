@@ -17,6 +17,7 @@ import { clientsRouter } from "~/server/trpc/procedures/admin/clients";
 import { certificationsRouter } from "~/server/trpc/procedures/admin/certifications";
 import { officesRouter } from "~/server/trpc/procedures/admin/offices";
 import { benefitsRouter } from "~/server/trpc/procedures/admin/benefits";
+import { valuesRouter } from "~/server/trpc/procedures/admin/values";
 import { heroSectionsRouter } from "~/server/trpc/procedures/admin/heroSections";
 import { teamMembersRouter } from "~/server/trpc/procedures/admin/teamMembers";
 import { jobPositionsRouter } from "~/server/trpc/procedures/admin/jobPositions";
@@ -46,6 +47,7 @@ export const appRouter = createTRPCRouter({
   certifications: certificationsRouter,
   offices: officesRouter,
   benefits: benefitsRouter,
+  values: valuesRouter,
   heroSections: heroSectionsRouter,
   teamMembers: teamMembersRouter,
   jobPositions: jobPositionsRouter,

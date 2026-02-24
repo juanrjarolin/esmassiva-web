@@ -106,6 +106,7 @@ model Certification {
   name        String
   icon        String   // Nombre del icono de Lucide
   description String?
+  image       String?  // URL de la imagen del premio/certificado
 
   order       Int      @default(0)
   isActive    Boolean  @default(true)
@@ -144,6 +145,21 @@ model Benefit {
   isActive    Boolean  @default(true)
 
   @@map("benefits")
+}
+
+// Valores de la empresa (para página Nosotros)
+model Value {
+  id          Int      @id @default(autoincrement())
+  updatedAt   DateTime @updatedAt
+
+  title       String
+  description String   @db.Text
+  icon        String   // Nombre del icono de Lucide
+
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+
+  @@map("values")
 }
 
 // Secciones Hero (para cada página)

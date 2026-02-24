@@ -46,6 +46,7 @@ const menuItems = [
       { title: "Certificaciones", href: "/admin/certificaciones", icon: Award },
       { title: "Oficinas", href: "/admin/oficinas", icon: MapPin },
       { title: "Beneficios", href: "/admin/beneficios", icon: Heart },
+      { title: "Valores", href: "/admin/valores", icon: Award },
       { title: "Heroes", href: "/admin/heroes", icon: Image },
       { title: "Páginas", href: "/admin/paginas", icon: FileText },
     ]
@@ -114,7 +115,7 @@ function AdminLayout() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError("");
-    
+
     if (!loginForm.email || !loginForm.password) {
       setLoginError("Por favor ingresa email y contraseña");
       return;

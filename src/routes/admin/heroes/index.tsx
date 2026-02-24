@@ -48,6 +48,8 @@ function HeroesAdmin() {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form, setForm] = useState<HeroForm>(emptyForm);
+  const [originalPage, setOriginalPage] = useState<string>("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { data: heroes, isLoading } = useQuery(trpc.heroSections.list.queryOptions());
 
@@ -56,6 +58,9 @@ function HeroesAdmin() {
       onSuccess: () => {
         queryClient.invalidateQueries(trpc.heroSections.list.queryOptions());
         queryClient.invalidateQueries(trpc.content.getHero.queryOptions({ page: form.page }));
+        if (originalPage && originalPage !== form.page) {
+          queryClient.invalidateQueries(trpc.content.getHero.queryOptions({ page: originalPage }));
+        }
         queryClient.invalidateQueries(trpc.content.getHomepageData.queryOptions());
         toast.success("Hero guardado");
         closeModal();
@@ -64,18 +69,67 @@ function HeroesAdmin() {
     })
   );
 
+  const deleteMutation = useMutation(
+    trpc.heroSections.delete.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries(trpc.heroSections.list.queryOptions());
+        queryClient.invalidateQueries(trpc.content.getHero.queryOptions({ page: originalPage }));
+        queryClient.invalidateQueries(trpc.content.getHomepageData.queryOptions());
+      },
+      onError: (error) => toast.error(error.message),
+    })
+  );
+
   const openModal = (item?: HeroForm) => {
-    setForm(item || emptyForm);
+    if (item) {
+      setForm(item);
+      setOriginalPage(item.page);
+    } else {
+      setForm(emptyForm);
+      setOriginalPage("");
+    }
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setForm(emptyForm);
+    setOriginalPage("");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Si estamos editando y la página cambió, necesitamos eliminar el antiguo primero
+    if (originalPage && originalPage !== form.page && originalPage !== "") {
+      setIsDeleting(true);
+      try {
+        // Eliminar el hero antiguo
+        await new Promise<void>((resolve, reject) => {
+          deleteMutation.mutate(
+            { page: originalPage },
+            {
+              onSuccess: () => {
+                resolve();
+              },
+              onError: (error) => {
+                console.error("Error deleting old hero:", error);
+                reject(error);
+              },
+            }
+          );
+        });
+        // Pequeña pausa para asegurar que la eliminación se complete
+        await new Promise(resolve => setTimeout(resolve, 100));
+      } catch (error) {
+        setIsDeleting(false);
+        toast.error("Error al cambiar la página del hero. Por favor, inténtalo de nuevo.");
+        return;
+      } finally {
+        setIsDeleting(false);
+      }
+    }
+
     upsertMutation.mutate(form);
   };
 
@@ -138,12 +192,22 @@ function HeroesAdmin() {
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Página *</label>
-                <select value={form.page} onChange={(e) => setForm(prev => ({ ...prev, page: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl" required>
+                <select
+                  value={form.page}
+                  onChange={(e) => setForm(prev => ({ ...prev, page: e.target.value }))}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                  required
+                >
                   <option value="">Seleccionar página</option>
                   {pageOptions.map((opt) => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
                 </select>
+                {originalPage && originalPage !== form.page && (
+                  <p className="mt-1 text-xs text-amber-600">
+                    ⚠️ Cambiar la página creará un nuevo hero y eliminará el anterior
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Título *</label>
@@ -158,6 +222,7 @@ function HeroesAdmin() {
                 <textarea value={form.description || ""} onChange={(e) => setForm(prev => ({ ...prev, description: e.target.value }))} rows={3} className="w-full px-3 py-2 border border-slate-300 rounded-xl" />
               </div>
               <ImageUpload
+                key={originalPage || 'new'}
                 value={form.image || ""}
                 onChange={(url) => setForm(prev => ({ ...prev, image: url }))}
                 label="Imagen"
@@ -186,8 +251,8 @@ function HeroesAdmin() {
               </div>
               <div className="flex justify-end space-x-3 pt-4 border-t">
                 <button type="button" onClick={closeModal} className="px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-xl">Cancelar</button>
-                <button type="submit" disabled={upsertMutation.isPending} className="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50">
-                  {upsertMutation.isPending ? "Guardando..." : "Guardar"}
+                <button type="submit" disabled={upsertMutation.isPending || isDeleting || deleteMutation.isPending} className="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50">
+                  {isDeleting || deleteMutation.isPending ? "Eliminando anterior..." : upsertMutation.isPending ? "Guardando..." : "Guardar"}
                 </button>
               </div>
             </form>

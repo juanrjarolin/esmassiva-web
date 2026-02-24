@@ -54,8 +54,16 @@ function EmpleosAdmin() {
     trpc.jobPositions.create.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries(trpc.jobPositions.list.queryOptions());
-        queryClient.invalidateQueries(trpc.content.getJobPositions.queryOptions());
-        queryClient.invalidateQueries(trpc.content.getJobBySlug.queryOptions({ slug: "" }));
+        // Invalidar todas las queries de getJobPositions
+        queryClient.invalidateQueries({
+          queryKey: ["trpc", "content", "getJobPositions"],
+          exact: false,
+        });
+        // Invalidar todas las queries de getJobBySlug
+        queryClient.invalidateQueries({
+          queryKey: ["trpc", "content", "getJobBySlug"],
+          exact: false,
+        });
         toast.success("Empleo creado");
         closeModal();
       },
@@ -67,7 +75,12 @@ function EmpleosAdmin() {
     trpc.jobPositions.update.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries(trpc.jobPositions.list.queryOptions());
-        queryClient.invalidateQueries(trpc.content.getJobPositions.queryOptions());
+        // Invalidar todas las queries de getJobPositions
+        queryClient.invalidateQueries({
+          queryKey: ["trpc", "content", "getJobPositions"],
+          exact: false,
+        });
+        // Invalidar todas las queries de getJobBySlug
         queryClient.invalidateQueries({
           queryKey: ["trpc", "content", "getJobBySlug"],
           exact: false,
@@ -83,7 +96,12 @@ function EmpleosAdmin() {
     trpc.jobPositions.delete.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries(trpc.jobPositions.list.queryOptions());
-        queryClient.invalidateQueries(trpc.content.getJobPositions.queryOptions());
+        // Invalidar todas las queries de getJobPositions
+        queryClient.invalidateQueries({
+          queryKey: ["trpc", "content", "getJobPositions"],
+          exact: false,
+        });
+        // Invalidar todas las queries de getJobBySlug
         queryClient.invalidateQueries({
           queryKey: ["trpc", "content", "getJobBySlug"],
           exact: false,
