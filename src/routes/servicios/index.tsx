@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ArrowRight, Phone, ShoppingCart, Headphones, CreditCard, Building2, TrendingUp } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowRight, Phone, ShoppingCart, Headphones, CreditCard, Building2, TrendingUp, Users, Globe, Shield, Award, Star, CheckCircle, Zap, Target } from "lucide-react";
 import { useTRPC } from "~/trpc/react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -10,59 +10,28 @@ export const Route = createFileRoute("/servicios/")({
 function ServiciosPage() {
   const trpc = useTRPC();
   const { data: settings } = useQuery(trpc.content.getSiteSettings.queryOptions());
+  const { data: services = [] } = useQuery(trpc.content.getServices.queryOptions());
 
   // Función helper para obtener texto con fallback
   const t = (key: string, fallback: string) => (settings?.[key] && settings[key].trim() !== "" ? settings[key] : fallback);
-  const services = [
-    {
-      id: 'ventas-telemarketing',
-      title: 'B2B & B2C Ventas y Telemarketing',
-      description: 'Servicios integrales de ventas para empresas B2B y B2C con estrategias personalizadas y tecnología avanzada.',
-      icon: Phone,
-      features: ['Ventas B2B especializadas', 'Telemarketing B2C', 'Generación de leads', 'CRM integrado'],
-      href: '/servicios/ventas-telemarketing'
-    },
-    {
-      id: 'ecommerce-soporte-digital',
-      title: 'E-commerce - Ventas Digitales',
-      description: 'Optimiza tu comercio electrónico con soporte especializado en ventas digitales y atención omnicanal 24/7.',
-      icon: ShoppingCart,
-      features: ['Soporte e-commerce', 'Ventas digitales', 'Chat en vivo', 'Gestión de pedidos'],
-      href: '/servicios/ecommerce-soporte-digital'
-    },
-    {
-      id: 'atencion-cliente',
-      title: 'Servicio al Cliente',
-      description: 'Brinda experiencias excepcionales a tus clientes con nuestro servicio de atención personalizada multicanal.',
-      icon: Headphones,
-      features: ['Atención 24/7', 'Soporte multicanal', 'Resolución de incidencias', 'Satisfacción garantizada'],
-      href: '/servicios/atencion-cliente'
-    },
-    {
-      id: 'cobranzas-recuperacion',
-      title: 'Cobranzas y Recuperación',
-      description: 'Recupera tu cartera vencida con estrategias profesionales y respetuosas hacia tus clientes.',
-      icon: CreditCard,
-      features: ['Cobranza preventiva', 'Recuperación de cartera', 'Negociación de pagos', 'Reporting detallado'],
-      href: '/servicios/cobranzas-recuperacion'
-    },
-    {
-      id: 'bpo',
-      title: 'Business Process Outsourcing',
-      description: 'Optimiza tus procesos de negocio con nuestras soluciones integrales de tercerización empresarial.',
-      icon: Building2,
-      features: ['Procesos administrativos', 'Back office', 'Data entry', 'Análisis de datos'],
-      href: '/servicios/bpo'
-    },
-    {
-      id: 'smart-b2b-revenues',
-      title: 'Smart B2B Revenues',
-      description: 'Soluciones inteligentes de generación de ingresos B2B con análisis predictivo y automatización avanzada.',
-      icon: TrendingUp,
-      features: ['Lead scoring inteligente', 'Estrategias B2B personalizadas', 'Automatización de ventas', 'Analytics avanzado'],
-      href: '/servicios/smart-b2b-revenues'
-    }
-  ];
+
+  // Icon mapping helper
+  const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+    Phone,
+    ShoppingCart,
+    Headphones,
+    CreditCard,
+    Building2,
+    TrendingUp,
+    Users,
+    Globe,
+    Shield,
+    Award,
+    Star,
+    CheckCircle,
+    Zap,
+    Target,
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary-50 to-white">
@@ -84,56 +53,69 @@ function ServiciosPage() {
       {/* Services Grid */}
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {services.map((service) => {
-              const Icon = service.icon;
-              return (
-                <div
-                  key={service.id}
-                  className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-secondary-100 hover:border-primary-200 hover:-translate-y-1 hover:scale-[1.01]"
-                >
-                  <div className="p-8">
-                    <div className="flex items-start justify-between mb-6">
-                      <div className="flex-shrink-0">
-                        <div className="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center group-hover:bg-primary-200 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                          <Icon className="w-8 h-8 text-primary-600 transition-transform duration-300" />
+          {services.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-secondary-600">No hay servicios disponibles en este momento.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {services.map((service) => {
+                const Icon = iconMap[service.icon] || Building2;
+                const benefits = typeof service.benefits === 'string'
+                  ? JSON.parse(service.benefits || "[]")
+                  : service.benefits || [];
+
+                return (
+                  <div
+                    key={service.id}
+                    className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-secondary-100 hover:border-primary-200 hover:-translate-y-1 hover:scale-[1.01]"
+                  >
+                    <div className="p-8">
+                      <div className="flex items-start justify-between mb-6">
+                        <div className="flex-shrink-0">
+                          <div className={`w-16 h-16 ${service.bgColor} rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
+                            <Icon className={`w-8 h-8 ${service.iconColor} transition-transform duration-300`} />
+                          </div>
                         </div>
+                        <ArrowRight className="w-6 h-6 text-secondary-400 group-hover:text-primary-600 group-hover:translate-x-1 group-hover:scale-110 transition-all duration-200" />
                       </div>
-                      <ArrowRight className="w-6 h-6 text-secondary-400 group-hover:text-primary-600 group-hover:translate-x-1 group-hover:scale-110 transition-all duration-200" />
+
+                      <h3 className="text-2xl font-bold text-secondary-900 mb-4 group-hover:text-primary-600 transition-colors duration-300">
+                        {service.title}
+                      </h3>
+
+                      <p className="text-secondary-600 mb-6 leading-relaxed transition-colors duration-300 group-hover:text-secondary-700">
+                        {service.description}
+                      </p>
+
+                      {benefits.length > 0 && (
+                        <ul className="space-y-2 mb-8">
+                          {benefits.slice(0, 4).map((benefit: string, index: number) => (
+                            <li
+                              key={index}
+                              className="flex items-center text-sm text-secondary-600 opacity-90 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300"
+                              style={{ transitionDelay: `${index * 50}ms` }}
+                            >
+                              <CheckCircle className="w-4 h-4 text-primary-500 mr-3 flex-shrink-0 group-hover:scale-125 transition-transform duration-300" />
+                              {benefit}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+
+                      <Link
+                        to="/servicios/$slug"
+                        params={{ slug: service.slug }}
+                        className="w-full bg-primary-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-primary-700 hover:scale-[1.02] transition-all duration-200 group-hover:shadow-lg block text-center"
+                      >
+                        {t("services_cta", "Conocer más")}
+                      </Link>
                     </div>
-
-                    <h3 className="text-2xl font-bold text-secondary-900 mb-4 group-hover:text-primary-600 transition-colors duration-300">
-                      {service.title}
-                    </h3>
-
-                    <p className="text-secondary-600 mb-6 leading-relaxed transition-colors duration-300 group-hover:text-secondary-700">
-                      {service.description}
-                    </p>
-
-                    <ul className="space-y-2 mb-8">
-                      {service.features.map((feature, index) => (
-                        <li
-                          key={index}
-                          className="flex items-center text-sm text-secondary-600 opacity-90 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300"
-                          style={{ transitionDelay: `${index * 50}ms` }}
-                        >
-                          <div className="w-2 h-2 bg-primary-500 rounded-full mr-3 flex-shrink-0 group-hover:scale-125 transition-transform duration-300"></div>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-
-                    <a
-                      href={service.href}
-                      className="w-full bg-primary-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-primary-700 hover:scale-[1.02] transition-all duration-200 group-hover:shadow-lg block text-center"
-                    >
-                      {t("services_cta", "Conocer más")}
-                    </a>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 
@@ -148,12 +130,18 @@ function ServiciosPage() {
             mejorar la experiencia de tus clientes.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-white text-primary-600 px-8 py-4 rounded-xl font-semibold hover:bg-secondary-50 hover:scale-105 hover:shadow-xl transition-all duration-200 shadow-lg">
+            <a
+              href="/contacto"
+              className="bg-white text-primary-600 px-8 py-4 rounded-xl font-semibold hover:bg-secondary-50 hover:scale-105 hover:shadow-xl transition-all duration-200 shadow-lg text-center"
+            >
               Solicitar Propuesta
-            </button>
-            <button className="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-primary-600 hover:scale-105 transition-all duration-200">
+            </a>
+            <a
+              href="/contacto"
+              className="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-primary-600 hover:scale-105 transition-all duration-200 text-center"
+            >
               Agendar Reunión
-            </button>
+            </a>
           </div>
         </div>
       </section>

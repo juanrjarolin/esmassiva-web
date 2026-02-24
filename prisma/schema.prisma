@@ -40,7 +40,46 @@ model Service {
   iconColor   String   @default("text-primary-600")
   benefits    String   @db.Text // JSON array de beneficios
 
-  // Contenido de la página individual del servicio
+  // Secciones editables de la página individual del servicio
+  // Hero Section
+  heroTitle       String?  @db.Text
+  heroSubtitle    String?  @db.Text
+  heroDescription String?  @db.Text
+  heroImage       String?
+  heroCtaText      String?
+  heroCtaLink      String?
+  heroCtaSecondaryText String?
+  heroCtaSecondaryLink String?
+
+  // Features Section
+  featuresTitle       String?  @db.Text
+  featuresSubtitle     String?  @db.Text
+  features            String?  @db.Text // JSON array: [{icon, title, description}]
+
+  // Services/Channels Section (opcional, para algunos servicios)
+  servicesTitle       String?  @db.Text
+  servicesSubtitle    String?  @db.Text
+  services            String?  @db.Text // JSON array: [{icon, title, description}]
+
+  // Benefits Section
+  benefitsTitle       String?  @db.Text
+  benefitsSubtitle    String?  @db.Text
+  benefitsImage       String?
+
+  // Process Section
+  processTitle        String?  @db.Text
+  processSubtitle     String?  @db.Text
+  process             String?  @db.Text // JSON array: [{step, title, description}]
+
+  // CTA Section
+  ctaTitle            String?  @db.Text
+  ctaDescription      String?  @db.Text
+  ctaButtonText       String?
+  ctaButtonLink       String?
+  ctaSecondaryButtonText String?
+  ctaSecondaryButtonLink String?
+
+  // Contenido adicional (opcional, para contenido libre)
   fullContent String?  @db.LongText
 
   order       Int      @default(0)

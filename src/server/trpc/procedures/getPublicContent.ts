@@ -27,6 +27,9 @@ export const publicContentRouter = router({
       return {
         ...service,
         benefits: JSON.parse(service.benefits || "[]") as string[],
+        features: service.features ? JSON.parse(service.features) : null,
+        services: service.services ? JSON.parse(service.services) : null,
+        process: service.process ? JSON.parse(service.process) : null,
       };
     }),
 
