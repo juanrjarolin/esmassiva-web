@@ -66,6 +66,18 @@ export default createApp({
       ],
     },
     {
+      type: "http",
+      name: "images",
+      base: basePath ? `${basePath}/api/images` : "/api/images",
+      handler: "./src/server/images/image-proxy-handler.ts",
+      target: "server",
+      plugins: () => [
+        tsConfigPaths({
+          projects: ["./tsconfig.json"],
+        }),
+      ],
+    },
+    {
       type: "spa",
       name: "client",
       handler: "./index.html",

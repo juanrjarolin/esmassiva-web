@@ -2,6 +2,8 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { minioClient } from "~/server/minio";
 import { baseProcedure } from "~/server/trpc/main";
+import { getBaseUrl } from "~/server/utils/base-url";
+import { env } from "~/server/env";
 
 const requestImageUploadUrlInput = z.object({
   fileName: z.string().min(1, "Nombre de archivo requerido"),
@@ -101,24 +103,12 @@ export const requestImageUploadUrl = baseProcedure
       }
 
       // Generate public URL for the uploaded image
-      // MinIO has a maximum expiry of 7 days for presigned URLs
-      // We'll use the maximum allowed (7 days = 604800 seconds)
-      let publicUrl: string;
-      try {
-        // Max expiry is 7 days (604800 seconds) - MinIO's maximum
-        const maxExpiry = 60 * 60 * 24 * 7; // 7 days
-        publicUrl = await minioClient.presignedGetObject(
-          bucketName,
-          objectName,
-          maxExpiry
-        );
-      } catch (presignedGetError) {
-        console.error("Error generating presigned GET URL:", presignedGetError);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Error al generar URL pública. ${presignedGetError instanceof Error ? presignedGetError.message : "Error desconocido"}`
-        });
-      }
+      // Use our proxy endpoint instead of presigned URLs for permanent access
+      // URL format: /api/images/bucket-name/object-path
+      const baseUrl = getBaseUrl();
+      const basePath = env.BASE_PATH?.trim() || "";
+      const apiBase = basePath ? `${basePath}/api/images` : "/api/images";
+      const publicUrl = `${baseUrl}${apiBase}/${bucketName}/${objectName}`;
 
       return {
         success: true,
