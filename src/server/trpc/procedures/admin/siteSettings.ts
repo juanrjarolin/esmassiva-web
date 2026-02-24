@@ -34,16 +34,31 @@ export const siteSettingsRouter = router({
   setMany: baseProcedure
     .input(z.record(z.string(), z.string()))
     .mutation(async ({ input }) => {
-      await Promise.all(
-        Object.entries(input).map(([key, value]) =>
-          db.siteSettings.upsert({
-            where: { key },
-            update: { value },
-            create: { key, value },
-          })
-        )
-      );
-      return { success: true };
+      try {
+        // Filtrar entradas vacías o con valores undefined/null
+        const validEntries = Object.entries(input).filter(([key, value]) => {
+          return key && value !== undefined && value !== null;
+        });
+
+        if (validEntries.length === 0) {
+          return { success: true, message: "No hay cambios para guardar" };
+        }
+
+        await Promise.all(
+          validEntries.map(([key, value]) =>
+            db.siteSettings.upsert({
+              where: { key },
+              update: { value: String(value) },
+              create: { key, value: String(value) },
+            })
+          )
+        );
+
+        return { success: true, saved: validEntries.length };
+      } catch (error) {
+        console.error("Error en setMany:", error);
+        throw new Error(`Error al guardar configuración: ${error instanceof Error ? error.message : "Error desconocido"}`);
+      }
     }),
 
   delete: baseProcedure

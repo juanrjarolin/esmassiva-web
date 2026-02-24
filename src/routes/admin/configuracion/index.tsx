@@ -139,23 +139,53 @@ function ConfiguracionAdmin() {
   const saveMutation = useMutation(
     trpc.siteSettings.setMany.mutationOptions({
       onSuccess: async () => {
-        // Invalidar todas las queries relacionadas
-        await queryClient.invalidateQueries({ queryKey: ["siteSettings"] });
-        await queryClient.invalidateQueries(trpc.content.getSiteSettings.queryOptions());
-        await queryClient.invalidateQueries(trpc.content.getHomepageData.queryOptions());
+        try {
+          // Invalidar todas las queries relacionadas
+          await queryClient.invalidateQueries({ queryKey: ["siteSettings"] });
+          await queryClient.invalidateQueries(trpc.content.getSiteSettings.queryOptions());
+          await queryClient.invalidateQueries(trpc.content.getHomepageData.queryOptions());
 
-        // Forzar refetch de getSiteSettings para asegurar que se actualice
-        await queryClient.refetchQueries(trpc.content.getSiteSettings.queryOptions());
+          // Forzar refetch de getSiteSettings para asegurar que se actualice
+          await queryClient.refetchQueries(trpc.content.getSiteSettings.queryOptions());
 
-        toast.success("Configuración guardada");
+          toast.success("Configuración guardada correctamente");
+        } catch (error) {
+          console.error("Error al invalidar queries:", error);
+          toast.error("Configuración guardada pero puede que no se actualice inmediatamente");
+        }
       },
-      onError: (error) => toast.error(error.message),
+      onError: (error) => {
+        console.error("Error en la mutación:", error);
+        toast.error(error.message || "Error al guardar la configuración. Por favor, intenta de nuevo.");
+      },
     })
   );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    saveMutation.mutate(form);
+    e.stopPropagation();
+
+    // Prevenir scroll automático
+    window.scrollTo(0, 0);
+
+    // Convertir todos los valores a strings y filtrar undefined/null
+    const cleanedForm = Object.entries(form).reduce((acc, [key, value]) => {
+      // Convertir a string y eliminar valores undefined/null
+      const stringValue = value !== null && value !== undefined ? String(value) : "";
+      acc[key] = stringValue;
+      return acc;
+    }, {} as Record<string, string>);
+
+    console.log("Enviando configuración:", cleanedForm);
+
+    saveMutation.mutate(cleanedForm, {
+      onError: (error) => {
+        console.error("Error al guardar configuración:", error);
+        toast.error(error.message || "Error al guardar la configuración");
+      },
+    });
+
+    return false;
   };
 
   if (isLoading) {
@@ -502,8 +532,12 @@ function ConfiguracionAdmin() {
           </div>
         </div>
 
-        <div className="flex justify-end">
-          <button type="submit" disabled={saveMutation.isPending} className="flex items-center space-x-2 px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50">
+        <div className="flex justify-end sticky bottom-0 bg-white py-4 border-t border-slate-200 -mx-6 px-6">
+          <button
+            type="submit"
+            disabled={saveMutation.isPending}
+            className="flex items-center space-x-2 px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50 transition-colors"
+          >
             <Save className="w-5 h-5" />
             <span>{saveMutation.isPending ? "Guardando..." : "Guardar Configuración"}</span>
           </button>
