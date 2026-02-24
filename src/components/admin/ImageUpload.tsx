@@ -50,27 +50,36 @@ export function ImageUpload({
             throw new Error("Archivo no encontrado");
           }
 
-          // Upload the file to MinIO using the presigned URL
-          const response = await fetch(data.uploadUrl, {
-            method: "PUT",
-            body: selectedFile,
-            headers: {
-              "Content-Type": selectedFile.type,
-            },
+          // Upload the file through our server endpoint
+          const formData = new FormData();
+          formData.append("file", selectedFile);
+          formData.append("objectName", data.objectName);
+          formData.append("bucketName", "company-assets");
+
+          const response = await fetch(data.uploadEndpoint || "/api/upload-image", {
+            method: "POST",
+            body: formData,
           });
 
           if (!response.ok) {
-            throw new Error("Error al subir la imagen");
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || "Error al subir la imagen");
+          }
+
+          const result = await response.json();
+
+          if (!result.success) {
+            throw new Error(result.error || "Error al subir la imagen");
           }
 
           // Update the form with the public URL
-          onChange(data.publicUrl);
-          setPreview(data.publicUrl);
+          onChange(result.publicUrl);
+          setPreview(result.publicUrl);
           setSelectedFile(null);
           toast.success("Imagen subida correctamente");
         } catch (error) {
           console.error("Error uploading image:", error);
-          toast.error("Error al subir la imagen. Por favor, inténtalo de nuevo.");
+          toast.error(error instanceof Error ? error.message : "Error al subir la imagen. Por favor, inténtalo de nuevo.");
         } finally {
           setIsUploading(false);
         }

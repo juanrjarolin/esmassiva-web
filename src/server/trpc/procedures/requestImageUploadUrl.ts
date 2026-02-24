@@ -86,22 +86,6 @@ export const requestImageUploadUrl = baseProcedure
         }
       }
 
-      // Generate presigned URL (expires in 1 hour)
-      let presignedUrl: string;
-      try {
-        presignedUrl = await minioClient.presignedPutObject(
-          bucketName,
-          objectName,
-          60 * 60 // 1 hour expiry
-        );
-      } catch (presignedPutError) {
-        console.error("Error generating presigned PUT URL:", presignedPutError);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Error al generar URL de subida. ${presignedPutError instanceof Error ? presignedPutError.message : "Error desconocido"}`
-        });
-      }
-
       // Generate public URL for the uploaded image
       // Use our proxy endpoint instead of presigned URLs for permanent access
       // URL format: /api/images/bucket-name/object-path
@@ -112,10 +96,9 @@ export const requestImageUploadUrl = baseProcedure
 
       return {
         success: true,
-        uploadUrl: presignedUrl,
         objectName: objectName,
         publicUrl: publicUrl,
-        expiresIn: 3600 // 1 hour in seconds
+        uploadEndpoint: basePath ? `${basePath}/api/upload-image` : "/api/upload-image",
       };
     } catch (error) {
       if (error instanceof TRPCError) {

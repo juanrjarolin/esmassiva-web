@@ -78,6 +78,18 @@ export default createApp({
       ],
     },
     {
+      type: "http",
+      name: "upload-image",
+      base: basePath ? `${basePath}/api/upload-image` : "/api/upload-image",
+      handler: "./src/server/images/upload-image-handler.ts",
+      target: "server",
+      plugins: () => [
+        tsConfigPaths({
+          projects: ["./tsconfig.json"],
+        }),
+      ],
+    },
+    {
       type: "spa",
       name: "client",
       handler: "./index.html",
