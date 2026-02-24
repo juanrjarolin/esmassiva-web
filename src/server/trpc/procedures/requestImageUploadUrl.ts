@@ -101,14 +101,16 @@ export const requestImageUploadUrl = baseProcedure
       }
 
       // Generate public URL for the uploaded image
-      // Use presigned GET URL that doesn't expire (or expires in a very long time)
-      // In production, you might want to set up a proxy endpoint or use a CDN
+      // MinIO has a maximum expiry of 7 days for presigned URLs
+      // We'll use the maximum allowed (7 days = 604800 seconds)
       let publicUrl: string;
       try {
+        // Max expiry is 7 days (604800 seconds) - MinIO's maximum
+        const maxExpiry = 60 * 60 * 24 * 7; // 7 days
         publicUrl = await minioClient.presignedGetObject(
           bucketName,
           objectName,
-          60 * 60 * 24 * 365 // 1 year expiry for public images
+          maxExpiry
         );
       } catch (presignedGetError) {
         console.error("Error generating presigned GET URL:", presignedGetError);
