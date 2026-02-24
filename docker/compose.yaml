@@ -35,10 +35,15 @@ services:
       NODE_ENV: production
       PORT: 3000
       HOST: 0.0.0.0
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: admin123
     ports:
       - "3000:3000"
     depends_on:
       - mysql
+      - minio
     networks:
       - internal
 

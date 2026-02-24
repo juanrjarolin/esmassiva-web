@@ -14,6 +14,13 @@ export const requestImageUploadUrl = baseProcedure
   .input(requestImageUploadUrlInput)
   .mutation(async ({ input }) => {
     try {
+      console.log("Requesting image upload URL for:", {
+        fileName: input.fileName,
+        fileType: input.fileType,
+        fileSize: input.fileSize,
+        folder: input.folder
+      });
+
       // Validate file type (only allow images)
       const allowedTypes = [
         'image/jpeg',
@@ -39,26 +46,77 @@ export const requestImageUploadUrl = baseProcedure
 
       // Ensure bucket exists
       const bucketName = 'company-assets';
-      const bucketExists = await minioClient.bucketExists(bucketName);
+      let bucketExists = false;
+      try {
+        bucketExists = await minioClient.bucketExists(bucketName);
+      } catch (bucketCheckError) {
+        console.error("Error checking bucket existence:", bucketCheckError);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `No se puede conectar con MinIO. Verifica que el servicio esté corriendo. Error: ${bucketCheckError instanceof Error ? bucketCheckError.message : "Desconocido"}`
+        });
+      }
+
       if (!bucketExists) {
-        await minioClient.makeBucket(bucketName);
+        try {
+          await minioClient.makeBucket(bucketName);
+          // Set bucket policy to allow public read access
+          await minioClient.setBucketPolicy(
+            bucketName,
+            JSON.stringify({
+              Version: "2012-10-17",
+              Statement: [
+                {
+                  Effect: "Allow",
+                  Principal: { AWS: ["*"] },
+                  Action: ["s3:GetObject"],
+                  Resource: [`arn:aws:s3:::${bucketName}/*`],
+                },
+              ],
+            })
+          );
+        } catch (makeBucketError) {
+          console.error("Error creating bucket:", makeBucketError);
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Error al crear el bucket en MinIO. Error: ${makeBucketError instanceof Error ? makeBucketError.message : "Desconocido"}`
+          });
+        }
       }
 
       // Generate presigned URL (expires in 1 hour)
-      const presignedUrl = await minioClient.presignedPutObject(
-        bucketName,
-        objectName,
-        60 * 60 // 1 hour expiry
-      );
+      let presignedUrl: string;
+      try {
+        presignedUrl = await minioClient.presignedPutObject(
+          bucketName,
+          objectName,
+          60 * 60 // 1 hour expiry
+        );
+      } catch (presignedPutError) {
+        console.error("Error generating presigned PUT URL:", presignedPutError);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Error al generar URL de subida. ${presignedPutError instanceof Error ? presignedPutError.message : "Error desconocido"}`
+        });
+      }
 
       // Generate public URL for the uploaded image
       // Use presigned GET URL that doesn't expire (or expires in a very long time)
       // In production, you might want to set up a proxy endpoint or use a CDN
-      const publicUrl = await minioClient.presignedGetObject(
-        bucketName,
-        objectName,
-        60 * 60 * 24 * 365 // 1 year expiry for public images
-      );
+      let publicUrl: string;
+      try {
+        publicUrl = await minioClient.presignedGetObject(
+          bucketName,
+          objectName,
+          60 * 60 * 24 * 365 // 1 year expiry for public images
+        );
+      } catch (presignedGetError) {
+        console.error("Error generating presigned GET URL:", presignedGetError);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Error al generar URL pública. ${presignedGetError instanceof Error ? presignedGetError.message : "Error desconocido"}`
+        });
+      }
 
       return {
         success: true,
@@ -73,9 +131,22 @@ export const requestImageUploadUrl = baseProcedure
       }
 
       console.error("Error generating image upload URL:", error);
+
+      // Provide more specific error messages
+      let errorMessage = "Error al generar URL de subida. Por favor, inténtalo de nuevo.";
+      if (error instanceof Error) {
+        if (error.message.includes("ECONNREFUSED") || error.message.includes("connect")) {
+          errorMessage = "No se puede conectar con MinIO. Verifica que el servicio esté corriendo.";
+        } else if (error.message.includes("Access Denied") || error.message.includes("Forbidden")) {
+          errorMessage = "Error de autenticación con MinIO. Verifica las credenciales.";
+        } else {
+          errorMessage = `Error: ${error.message}`;
+        }
+      }
+
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
-        message: "Error al generar URL de subida. Por favor, inténtalo de nuevo."
+        message: errorMessage
       });
     }
   });

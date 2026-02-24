@@ -39,11 +39,17 @@ export function Footer() {
           {/* Company Info */}
           <div className="lg:col-span-1">
             <div className="flex items-center mb-6">
-              {settings?.logoFooter ? (
+              {settings?.logoFooter && settings.logoFooter.trim() !== "" ? (
                 <img
+                  key={settings.logoFooter}
                   src={settings.logoFooter}
                   alt={settings.siteName || "Esmassiva"}
                   className="h-12 mr-3"
+                  onError={(e) => {
+                    // Fallback si la imagen no carga
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/logo-esmassiva.png";
+                  }}
                 />
               ) : (
                 <img

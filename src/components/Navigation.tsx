@@ -66,11 +66,17 @@ export function Navigation() {
             {/* Logo */}
             <div className="flex-shrink-0">
               <a href="/" className="flex items-center">
-                {settings?.logoNavbar ? (
+                {settings?.logoNavbar && settings.logoNavbar.trim() !== "" ? (
                   <img
+                    key={settings.logoNavbar}
                     src={settings.logoNavbar}
                     alt={settings.siteName || "Esmassiva"}
                     className="h-12 mr-3"
+                    onError={(e) => {
+                      // Fallback si la imagen no carga
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                    }}
                   />
                 ) : (
                   <img

@@ -138,9 +138,15 @@ function ConfiguracionAdmin() {
 
   const saveMutation = useMutation(
     trpc.siteSettings.setMany.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["siteSettings"] });
-        queryClient.invalidateQueries(trpc.content.getHomepageData.queryOptions());
+      onSuccess: async () => {
+        // Invalidar todas las queries relacionadas
+        await queryClient.invalidateQueries({ queryKey: ["siteSettings"] });
+        await queryClient.invalidateQueries(trpc.content.getSiteSettings.queryOptions());
+        await queryClient.invalidateQueries(trpc.content.getHomepageData.queryOptions());
+
+        // Forzar refetch de getSiteSettings para asegurar que se actualice
+        await queryClient.refetchQueries(trpc.content.getSiteSettings.queryOptions());
+
         toast.success("Configuración guardada");
       },
       onError: (error) => toast.error(error.message),
