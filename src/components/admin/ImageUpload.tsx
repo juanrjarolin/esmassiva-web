@@ -204,17 +204,30 @@ export function ImageUpload({
 
         {/* URL input as fallback */}
         <div className="text-xs text-slate-500 mt-2">
-          O ingresa una URL:
+          O ingresa una URL (absoluta o relativa):
         </div>
         <input
-          type="url"
+          type="text"
           value={value || ""}
           onChange={(e) => {
-            onChange(e.target.value);
-            setPreview(e.target.value || null);
+            const url = e.target.value.trim();
+            onChange(url);
+            // Actualizar preview solo si es una URL válida (absoluta o relativa)
+            if (url) {
+              // Si es una URL relativa que empieza con /, es válida
+              // Si es una URL absoluta (http:// o https://), también es válida
+              if (url.startsWith("/") || url.startsWith("http://") || url.startsWith("https://")) {
+                setPreview(url);
+              } else {
+                // Intentar con https:// si no tiene protocolo
+                setPreview(`https://${url}`);
+              }
+            } else {
+              setPreview(null);
+            }
           }}
           className="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm"
-          placeholder="https://..."
+          placeholder="/api/images/... o https://..."
           disabled={isUploading}
         />
       </div>
