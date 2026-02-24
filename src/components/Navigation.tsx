@@ -47,14 +47,18 @@ export function Navigation() {
       <div className="bg-secondary-900 text-white py-2 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex justify-between items-center text-sm">
           <div className="flex items-center space-x-6">
-            <div className="flex items-center">
-              <Phone className="w-4 h-4 mr-2" />
-              <span>+52 800 123 4567</span>
-            </div>
-            <div className="flex items-center">
-              <Mail className="w-4 h-4 mr-2" />
-              <span>contacto@esmassiva.com</span>
-            </div>
+            {settings?.contactPhone && (
+              <div className="flex items-center">
+                <Phone className="w-4 h-4 mr-2" />
+                <span>{settings.contactPhone}</span>
+              </div>
+            )}
+            {settings?.contactEmail && (
+              <div className="flex items-center">
+                <Mail className="w-4 h-4 mr-2" />
+                <span>{settings.contactEmail}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>

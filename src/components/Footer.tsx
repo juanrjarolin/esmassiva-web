@@ -1,4 +1,4 @@
-import { Phone, Mail, MapPin, Globe, Shield, Award, Linkedin, Facebook, Instagram, MessageCircle } from "lucide-react";
+import { Phone, Mail, MapPin, Globe, Shield, Award, Linkedin, Facebook, Instagram, MessageCircle, Twitter } from "lucide-react";
 import { useTRPC } from "~/trpc/react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -68,18 +68,26 @@ export function Footer() {
               integrales de contact center y BPO en el mercado hispanohablante.
             </p>
             <div className="flex space-x-4">
-              <a href="https://www.facebook.com/esmassiva" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-secondary-800 rounded-lg flex items-center justify-center hover:bg-accentBlue-600 transition-colors">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href="https://www.instagram.com/esmassiva" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-secondary-800 rounded-lg flex items-center justify-center hover:bg-accentBlue-600 transition-colors">
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a href="https://www.linkedin.com/company/esmassiva" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-secondary-800 rounded-lg flex items-center justify-center hover:bg-accentBlue-600 transition-colors">
-                <Linkedin className="w-5 h-5" />
-              </a>
-              <a href="https://wa.me/595211234567" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-secondary-800 rounded-lg flex items-center justify-center hover:bg-accentBlue-600 transition-colors">
-                <MessageCircle className="w-5 h-5" />
-              </a>
+              {settings?.facebook && (
+                <a href={settings.facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-secondary-800 rounded-lg flex items-center justify-center hover:bg-accentBlue-600 transition-colors">
+                  <Facebook className="w-5 h-5" />
+                </a>
+              )}
+              {settings?.instagram && (
+                <a href={settings.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-secondary-800 rounded-lg flex items-center justify-center hover:bg-accentBlue-600 transition-colors">
+                  <Instagram className="w-5 h-5" />
+                </a>
+              )}
+              {settings?.linkedin && (
+                <a href={settings.linkedin} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-secondary-800 rounded-lg flex items-center justify-center hover:bg-accentBlue-600 transition-colors">
+                  <Linkedin className="w-5 h-5" />
+                </a>
+              )}
+              {settings?.twitter && (
+                <a href={settings.twitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-secondary-800 rounded-lg flex items-center justify-center hover:bg-accentBlue-600 transition-colors">
+                  <Twitter className="w-5 h-5" />
+                </a>
+              )}
             </div>
           </div>
 
@@ -121,27 +129,47 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-bold mb-6">Contacto</h3>
             <div className="space-y-4">
-              <div className="flex items-start">
-                <Phone className="w-5 h-5 text-accentBlue-400 mr-3 mt-1 flex-shrink-0" />
-                <div>
-                  <div className="text-white font-medium">Línea Nacional</div>
-                  <div className="text-secondary-300">+52 800 123 4567</div>
+              {settings?.contactPhone && (
+                <div className="flex items-start">
+                  <Phone className="w-5 h-5 text-accentBlue-400 mr-3 mt-1 flex-shrink-0" />
+                  <div>
+                    <div className="text-white font-medium">
+                      {settings.contactPhoneDescription || "Teléfono"}
+                    </div>
+                    <a
+                      href={`tel:${settings.contactPhone.replace(/\s/g, "")}`}
+                      className="text-secondary-300 hover:text-accentBlue-400 transition-colors"
+                    >
+                      {settings.contactPhone}
+                    </a>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-start">
-                <Mail className="w-5 h-5 text-accentBlue-400 mr-3 mt-1 flex-shrink-0" />
-                <div>
-                  <div className="text-white font-medium">Email</div>
-                  <div className="text-secondary-300">contacto@esmassiva.com</div>
+              )}
+              {settings?.contactEmail && (
+                <div className="flex items-start">
+                  <Mail className="w-5 h-5 text-accentBlue-400 mr-3 mt-1 flex-shrink-0" />
+                  <div>
+                    <div className="text-white font-medium">
+                      {settings.contactEmailDescription || "Email"}
+                    </div>
+                    <a
+                      href={`mailto:${settings.contactEmail}`}
+                      className="text-secondary-300 hover:text-accentBlue-400 transition-colors"
+                    >
+                      {settings.contactEmail}
+                    </a>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-start">
-                <Globe className="w-5 h-5 text-accentBlue-400 mr-3 mt-1 flex-shrink-0" />
-                <div>
-                  <div className="text-white font-medium">Horarios</div>
-                  <div className="text-secondary-300">Lun - Vie: 8:00 AM - 8:00 PM</div>
+              )}
+              {settings?.address && (
+                <div className="flex items-start">
+                  <MapPin className="w-5 h-5 text-accentBlue-400 mr-3 mt-1 flex-shrink-0" />
+                  <div>
+                    <div className="text-white font-medium">Dirección</div>
+                    <div className="text-secondary-300">{settings.address}</div>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
