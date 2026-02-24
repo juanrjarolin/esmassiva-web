@@ -180,7 +180,7 @@ function CertificacionesAdmin() {
                 <input type="text" value={form.name} onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-xl" placeholder="Ej: ISO 27001" required />
               </div>
               <ImageUpload
-                key={editingItem?.id || 'new'}
+                key={`${editingItem?.id ?? "new"}:${form.image || ""}`}
                 value={form.image || ""}
                 onChange={(url) => setForm(prev => ({ ...prev, image: url }))}
                 label="Foto del Premio/Certificado"
