@@ -601,6 +601,7 @@ function ServiciosAdmin() {
                     </div>
                     <div>
                       <ImageUpload
+                        key={`hero-${editingService?.id || 'new'}-${form.heroImage || ''}`}
                         value={form.heroImage || ""}
                         onChange={(url) => setForm(prev => ({ ...prev, heroImage: url }))}
                         label="Imagen del Hero"
@@ -883,6 +884,7 @@ function ServiciosAdmin() {
                     </div>
                     <div>
                       <ImageUpload
+                        key={`benefits-${editingService?.id || 'new'}-${form.benefitsImage || ''}`}
                         value={form.benefitsImage || ""}
                         onChange={(url) => setForm(prev => ({ ...prev, benefitsImage: url }))}
                         label="Imagen de la Sección Benefits"
