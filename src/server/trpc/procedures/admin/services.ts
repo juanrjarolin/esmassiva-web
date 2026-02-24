@@ -15,6 +15,10 @@ const processItemSchema = z.object({
   description: z.string(),
 });
 
+// Helper para normalizar campos opcionales: null -> undefined
+const optionalString = () => z.string().nullable().optional().transform(val => val === null || val === "" ? undefined : val);
+const optionalStringArray = () => z.array(z.string()).nullable().optional().transform(val => val === null ? undefined : val);
+
 const serviceInput = z.object({
   title: z.string().min(1),
   slug: z.string().min(1),
@@ -24,39 +28,39 @@ const serviceInput = z.object({
   bgColor: z.string().default("bg-primary-100"),
   iconColor: z.string().default("text-primary-600"),
   benefits: z.array(z.string()),
-  fullContent: z.string().optional(),
+  fullContent: optionalString(),
   // Hero Section
-  heroTitle: z.string().optional(),
-  heroSubtitle: z.string().optional(),
-  heroDescription: z.string().optional(),
-  heroImage: z.string().optional(),
-  heroCtaText: z.string().optional(),
-  heroCtaLink: z.string().optional(),
-  heroCtaSecondaryText: z.string().optional(),
-  heroCtaSecondaryLink: z.string().optional(),
+  heroTitle: optionalString(),
+  heroSubtitle: optionalString(),
+  heroDescription: optionalString(),
+  heroImage: optionalString(),
+  heroCtaText: optionalString(),
+  heroCtaLink: optionalString(),
+  heroCtaSecondaryText: optionalString(),
+  heroCtaSecondaryLink: optionalString(),
   // Features Section
-  featuresTitle: z.string().optional(),
-  featuresSubtitle: z.string().optional(),
-  features: z.array(featureItemSchema).optional(),
+  featuresTitle: optionalString(),
+  featuresSubtitle: optionalString(),
+  features: z.array(featureItemSchema).nullable().optional().transform(val => val === null ? undefined : val),
   // Services/Channels Section
-  servicesTitle: z.string().optional(),
-  servicesSubtitle: z.string().optional(),
-  services: z.array(featureItemSchema).optional(),
+  servicesTitle: optionalString(),
+  servicesSubtitle: optionalString(),
+  services: z.array(featureItemSchema).nullable().optional().transform(val => val === null ? undefined : val),
   // Benefits Section
-  benefitsTitle: z.string().optional(),
-  benefitsSubtitle: z.string().optional(),
-  benefitsImage: z.string().optional(),
+  benefitsTitle: optionalString(),
+  benefitsSubtitle: optionalString(),
+  benefitsImage: optionalString(),
   // Process Section
-  processTitle: z.string().optional(),
-  processSubtitle: z.string().optional(),
-  process: z.array(processItemSchema).optional(),
+  processTitle: optionalString(),
+  processSubtitle: optionalString(),
+  process: z.array(processItemSchema).nullable().optional().transform(val => val === null ? undefined : val),
   // CTA Section
-  ctaTitle: z.string().optional(),
-  ctaDescription: z.string().optional(),
-  ctaButtonText: z.string().optional(),
-  ctaButtonLink: z.string().optional(),
-  ctaSecondaryButtonText: z.string().optional(),
-  ctaSecondaryButtonLink: z.string().optional(),
+  ctaTitle: optionalString(),
+  ctaDescription: optionalString(),
+  ctaButtonText: optionalString(),
+  ctaButtonLink: optionalString(),
+  ctaSecondaryButtonText: optionalString(),
+  ctaSecondaryButtonLink: optionalString(),
   order: z.number().default(0),
   isActive: z.boolean().default(true),
 });

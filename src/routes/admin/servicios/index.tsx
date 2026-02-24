@@ -194,6 +194,7 @@ function ServiciosAdmin() {
 
   const openModal = (service?: typeof services extends (infer T)[] ? T : never) => {
     if (service) {
+      // Normalizar valores null a strings vacíos para el formulario
       const parsedService = {
         ...service,
         benefits: JSON.parse(service.benefits || "[]"),
@@ -201,6 +202,30 @@ function ServiciosAdmin() {
         features: service.features ? JSON.parse(service.features) : [],
         services: service.services ? JSON.parse(service.services) : [],
         process: service.process ? JSON.parse(service.process) : [],
+        // Normalizar todos los campos opcionales: null -> ""
+        heroTitle: service.heroTitle || "",
+        heroSubtitle: service.heroSubtitle || "",
+        heroDescription: service.heroDescription || "",
+        heroImage: service.heroImage || "",
+        heroCtaText: service.heroCtaText || "",
+        heroCtaLink: service.heroCtaLink || "",
+        heroCtaSecondaryText: service.heroCtaSecondaryText || "",
+        heroCtaSecondaryLink: service.heroCtaSecondaryLink || "",
+        featuresTitle: service.featuresTitle || "",
+        featuresSubtitle: service.featuresSubtitle || "",
+        servicesTitle: service.servicesTitle || "",
+        servicesSubtitle: service.servicesSubtitle || "",
+        benefitsTitle: service.benefitsTitle || "",
+        benefitsSubtitle: service.benefitsSubtitle || "",
+        benefitsImage: service.benefitsImage || "",
+        processTitle: service.processTitle || "",
+        processSubtitle: service.processSubtitle || "",
+        ctaTitle: service.ctaTitle || "",
+        ctaDescription: service.ctaDescription || "",
+        ctaButtonText: service.ctaButtonText || "",
+        ctaButtonLink: service.ctaButtonLink || "",
+        ctaSecondaryButtonText: service.ctaSecondaryButtonText || "",
+        ctaSecondaryButtonLink: service.ctaSecondaryButtonLink || "",
       };
       setEditingService(parsedService);
       setForm(parsedService);
@@ -217,14 +242,49 @@ function ServiciosAdmin() {
     setForm(emptyForm);
   };
 
+  // Función helper para normalizar campos opcionales: null/empty string -> undefined
+  const normalizeOptionalField = (value: string | null | undefined): string | undefined => {
+    if (value === null || value === undefined || value.trim() === "") {
+      return undefined;
+    }
+    return value;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Normalizar todos los campos opcionales
     const data = {
       ...form,
       benefits: form.benefits.filter(b => b.trim() !== ""),
       features: form.features?.filter(f => f.title.trim() !== "" && f.description.trim() !== "") || [],
       services: form.services?.filter(s => s.title.trim() !== "" && s.description.trim() !== "") || [],
       process: form.process?.filter(p => p.title.trim() !== "" && p.description.trim() !== "") || [],
+      // Normalizar todos los campos opcionales de string
+      fullContent: normalizeOptionalField(form.fullContent),
+      heroTitle: normalizeOptionalField(form.heroTitle),
+      heroSubtitle: normalizeOptionalField(form.heroSubtitle),
+      heroDescription: normalizeOptionalField(form.heroDescription),
+      heroImage: normalizeOptionalField(form.heroImage),
+      heroCtaText: normalizeOptionalField(form.heroCtaText),
+      heroCtaLink: normalizeOptionalField(form.heroCtaLink),
+      heroCtaSecondaryText: normalizeOptionalField(form.heroCtaSecondaryText),
+      heroCtaSecondaryLink: normalizeOptionalField(form.heroCtaSecondaryLink),
+      featuresTitle: normalizeOptionalField(form.featuresTitle),
+      featuresSubtitle: normalizeOptionalField(form.featuresSubtitle),
+      servicesTitle: normalizeOptionalField(form.servicesTitle),
+      servicesSubtitle: normalizeOptionalField(form.servicesSubtitle),
+      benefitsTitle: normalizeOptionalField(form.benefitsTitle),
+      benefitsSubtitle: normalizeOptionalField(form.benefitsSubtitle),
+      benefitsImage: normalizeOptionalField(form.benefitsImage),
+      processTitle: normalizeOptionalField(form.processTitle),
+      processSubtitle: normalizeOptionalField(form.processSubtitle),
+      ctaTitle: normalizeOptionalField(form.ctaTitle),
+      ctaDescription: normalizeOptionalField(form.ctaDescription),
+      ctaButtonText: normalizeOptionalField(form.ctaButtonText),
+      ctaButtonLink: normalizeOptionalField(form.ctaButtonLink),
+      ctaSecondaryButtonText: normalizeOptionalField(form.ctaSecondaryButtonText),
+      ctaSecondaryButtonLink: normalizeOptionalField(form.ctaSecondaryButtonLink),
     };
 
     if (editingService?.id) {
